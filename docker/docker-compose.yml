@@ -1,12 +1,14 @@
 version: '3'
 services:
-  test-daemon:
+  sesame-daemon:
     build: . 
-    container_name: testdaemon
+    container_name: sesame-daemon
     volumes:
-      - "./src:/data"
+      - "..:/data"
     networks:
       - dev
+    ports:
+      - "9229:9229"
 networks:
   dev: 
     external: true      

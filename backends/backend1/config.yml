@@ -4,14 +4,18 @@ description: 'Config1 backend for tests'
 active: 1
 actions:
   CHANGEPWD:
-      exec: "changepasswd.sh"
-      onError: 'stop'
+      exec: "exemple.sh"
+      onError: 'continue'
   ADDIDENT:
-      exec: 'dummy.sh'
+      exec: 'exemple.sh'
+      onError: 'continue'
   UPDATEIDENT:
-      exec: 'dummy.sh'
+      exec: 'exemple.sh'
+      onError: 'continue'
   DELIDENT:
-      exec: 'dummy.sh'
+      exec: 'exemple.sh'
+      onError: 'continue'
   PING:
-      exec: 'ping.sh'
+      exec: 'exemple.sh'
+      onError: 'continue'
 

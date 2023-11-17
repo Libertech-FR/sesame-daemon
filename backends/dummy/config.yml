@@ -7,9 +7,12 @@ actions:
     onError: 'stop'
   ADDIDENT:
     exec: 'dummy.sh'
+    onError: 'stop'
   UPDATEIDENT:
     exec: 'dummy.sh'
+    onError: 'stop'
   DELIDENT:
     exec: 'dummy.sh'
+    onError: 'stop'
 
 

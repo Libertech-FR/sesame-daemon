@@ -27,6 +27,22 @@
 Daemon pour Sesame. Le demon est chargé d'executer les backends sur les ordres de l'orchestrator
 ## Installation developpement 
 un environnement de developpement est donné en docker 
+### Docker 
+contruisez l'image :
+dans ./docker 
+````bash
+docker-compose build
+````
+Puis lancer le 
+````bash
+docker-compose up -d
+````
+Installation 
+````bash
+docker exec sesame-daemon yarn
+````
+
+
 
 
 ### Installation système 
