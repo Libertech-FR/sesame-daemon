@@ -28,7 +28,7 @@ Daemon pour Sesame. Le demon est chargé d'executer les backends sur les ordres 
 ## Installation developpement 
 un environnement de developpement est donné en docker 
 ### Docker 
-contruisez l'image :
+#### contruisez l'image :
 dans ./docker 
 ````bash
 docker-compose build
@@ -37,11 +37,31 @@ Puis lancer le
 ````bash
 docker-compose up -d
 ````
-Installation 
+#### Installation 
 ````bash
 docker exec sesame-daemon yarn
 ````
-
+#### Lancez l'application en mode dev ou debug 
+copier env.exemple en .env
+editer et regler les variable d'environnements 
+```
+# Host Redis (defaut "localhost")
+REDIS_HOST=redis 
+# Port Redis (defaut 6379)
+REDIS_PORT=6379
+# User redis defaut ''
+REDIS_USER=
+# Mot de passe de User defaut ''
+REDIS_PASSWORD=
+# Chemin des backends par defaul le repertoire backends du projet
+#BACKENDS_PATH=
+# nom de la queue bullMQ ( defaut: 'backend')
+#NAME_QUEUE=
+```
+Vous etes pret
+````bash
+docker exec sesame-daemon yarn start:dev
+````
 
 
 
