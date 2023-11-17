@@ -1,0 +1,9 @@
+# Default settings for sesame-backend
+
+# Options for sesame daemon
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_USER=
+REDIS_PASSWORD=
+BACKENDS_PATH=/var/lib/sesame-daemon/backends
+NAME_QUEUE=backend

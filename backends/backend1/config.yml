@@ -1,0 +1,17 @@
+
+name: 'config1'
+description: 'Config1 backend for tests'
+active: 1
+actions:
+  CHANGEPWD:
+      exec: "changepasswd.sh"
+      onError: 'stop'
+  ADDIDENT:
+      exec: 'dummy.sh'
+  UPDATEIDENT:
+      exec: 'dummy.sh'
+  DELIDENT:
+      exec: 'dummy.sh'
+  PING:
+      exec: 'ping.sh'
+

@@ -1,0 +1,12 @@
+version: '3'
+services:
+  test-daemon:
+    build: . 
+    container_name: testdaemon
+    volumes:
+      - "./src:/data"
+    networks:
+      - dev
+networks:
+  dev: 
+    external: true      
