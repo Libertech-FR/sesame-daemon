@@ -7,8 +7,6 @@ services:
       - "..:/data"
     networks:
       - dev
-    ports:
-      - "9229:9229"
 networks:
   dev: 
     external: true      
