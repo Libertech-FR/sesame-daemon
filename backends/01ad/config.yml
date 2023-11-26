@@ -1,0 +1,17 @@
+
+name: 'AD'
+description: 'Backend for AD'
+active: 1
+actions:
+  CHANGEPWD:
+      exec: "changepasswd"
+      onError: 'stop'
+  ADDIDENT:
+      exec: 'dummy.sh'
+  UPDATEIDENT:
+      exec: 'dummy.sh'
+  DELIDENT:
+      exec: 'dummy.sh'
+  PING:
+      exec: 'ping.sh'
+

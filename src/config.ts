@@ -5,8 +5,7 @@ export default () => ({
         user : process.env.REDIS_USER || '',
         password: process.env.REDIS_PASSWORD ||''
     },
-    logLevel: process.env.LOG_LEVEL || 'INFO',
+    logLevel: process.env.LOG_LEVEL || 'info',
     backendsPath: process.env.BACKENDS_PATH || __dirname+'/../backends',
-    nameQueue: process.env.NAME_QUEUE || 'backend',
-    loglevel: process.env.LOG_LEVEL
+    nameQueue: process.env.NAME_QUEUE || 'backend'
 });

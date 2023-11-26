@@ -1,7 +1,5 @@
 #!/bin/sh
 echo "Hello Word"
-sleep 2
-echo "j'ai recu :"
-cat -
-echo "je provoque une erreur " >&2
-exit 255
+
+echo  dir : `dirname $0`
+exit 0

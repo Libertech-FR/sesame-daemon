@@ -1,6 +1,6 @@
 name: 'dummy'
 description: 'Dummy backend for tests'
-active: 1
+active: 0
 actions:
   CHANGEPWD:
     exec: "dummy.sh"

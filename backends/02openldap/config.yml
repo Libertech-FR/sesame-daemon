@@ -1,7 +1,7 @@
 
 name: 'openldap'
 description: 'Backend for openldap'
-active: 1
+active: 0
 actions:
   CHANGEPWD:
       exec: "changepasswd"

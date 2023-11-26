@@ -63,7 +63,12 @@ Vous etes pret
 docker exec sesame-daemon yarn start:dev
 ````
 
+### complation du daemon en un executable 
 
+```
+#npm i -g pkg
+#pkg dist/main.js -o sesame-daemon
+```
 
 ### Installation système 
 #### Debian

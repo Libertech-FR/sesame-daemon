@@ -22,7 +22,7 @@ export class AppService {
     await this.loadConfig()
     const backendResults=[]
 
-    const worker = new Worker('backend',  async job => {
+    const worker = new Worker(this.configService.get('nameQueue'),  async job => {
 
       let results=[]
       let gStatus=0;
@@ -57,15 +57,15 @@ export class AppService {
     const crawler = new fdir()
         .withBasePath()
         .filter((path, isDirectory) => path.endsWith(".yml"))
-    const files = crawler.crawl(this.configService.get('backendsPath')).sync();
+    const files = crawler.crawl(this.configService.get('backendsPath')).sync().sort();
     for await(const element of files) {
       const file = fs.readFileSync(element, 'utf8')
       const config=YAML.parse(file)
       try{
         const verif=plainToInstance(BackendConfigDto,config)
       }catch(e){
-        const erreurs=errors.map((e) => e.toString()).join(', ')
-        this.logger.fatal(`Erreur fichier de configuration : ${element} : ${erreurs}` )
+        //const erreurs=errors.map((e) => e.toString()).join(', ')
+        //this.logger.fatal(`Erreur fichier de configuration : ${element} : ${erreurs}` )
         mainProcess.exit(1)
       }
       config.path=path.dirname(element)
