@@ -11,7 +11,7 @@ avec dedans :
 ./nomDuBackend/config.yml
 ./nomDuBackend/bin/
 ```
-
+A NOTER : Les backends seront executé tour à tour par ordre aphabétique
 ## Fichier de configuration config.yml
 ```yaml
 name: 'dummy'
@@ -19,6 +19,9 @@ description: 'Dummy backend for tests'
 active: 1
 actions:
   CHANGEPWD:
+    exec: "dummy.sh"
+    onError: 'stop'
+  RESETPWD:
     exec: "dummy.sh"
     onError: 'stop'
   ADDIDENT:
@@ -39,6 +42,7 @@ Le fichier de configuration doit comprendre :
 * active : 0|1 0 le backend sera ignoré
 * actions : un tableau decrivant les actions 
     * **CHANGEPWD** : exec sera executé sur l ordre de changement de mot de passe
+    * **RESETPWD** : exec sera executé sur ordre de reset de mot de passe
     * **ADDIDENT** : exec sera executé sur l ordre de l'ajout d'une identite
     * **UPDATEIDENT** : exec sera executé sur l ordre  de modification d'une identite
     * **DELIDENT** : exec sera executé sur l ordre de suppression d'une identite

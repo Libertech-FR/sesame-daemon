@@ -6,6 +6,9 @@ actions:
   CHANGEPWD:
       exec: "exemple.sh"
       onError: 'continue'
+  RESETPWD:
+      exec: "exemple.sh
+      onError: 'continue'
   ADDIDENT:
       exec: 'exemple.sh'
       onError: 'continue'

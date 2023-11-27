@@ -6,6 +6,9 @@ actions:
   CHANGEPWD:
       exec: "changepasswd"
       onError: 'stop'
+  RESETPWD:
+      exec: "resetpasswd"
+      onError: 'stop'
   ADDIDENT:
       exec: 'dummy.sh'
   UPDATEIDENT:
