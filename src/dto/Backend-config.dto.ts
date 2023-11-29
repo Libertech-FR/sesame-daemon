@@ -1,6 +1,8 @@
 import { IsInt, IsString, IsEnum, IsNumber,IsNotEmpty } from 'class-validator';
 export enum ActionType {
+    LISTBACKEND = 'LISTBACKEND',
     CHANGEPWD = 'CHANGEPWD',
+    RESETPWD = "RESETPWD",
     ADDIDENT = 'ADDIDENT',
     UPDATEIDENT ='UPDATEIDENT',
     DELIDENT = 'DELIDENT'

@@ -28,8 +28,12 @@ export class AppService {
       let gStatus=0;
       this.logger.log('start daemon')
       for await(const backend of this.backendsConfig) {
+        if (job.name === "LISTBACKEND"){
+          this.logger.log('execute LISTBACKEND')
+          return {jobId:job.id,status:0,data:this.backendsConfig}
+        }
         if (backend.active === 1){
-          this.logger.log('Execute backend ' + backend.name)
+          this.logger.log('Execute backend command '+ job.name +' '+ backend.name)
           var task=backend.actions[job.name]
           this.logger.debug(backend.path +'/bin/'+ task.exec)
           const out=process.spawnSync(backend.path +'/bin/'+ task.exec,[],{
@@ -42,11 +46,13 @@ export class AppService {
           result.output=out.stdout.toString()
           result.error=out.stderr.toString()
           results.push(result);
-          if (task.onError == 'stop'){
+          if (task.onError === 'stop' && output.status != 0 ){
+               this.logger.log('stop on Error ')
                 break
           }
         }
       }
+      this.logger.debug('results : ')
       this.logger.debug(results)
       return {jobId:job.id,status:gStatus,data:results}
     },{connection:this.configService.get('redis')});
@@ -59,6 +65,7 @@ export class AppService {
         .filter((path, isDirectory) => path.endsWith(".yml"))
     const files = crawler.crawl(this.configService.get('backendsPath')).sync().sort();
     for await(const element of files) {
+      this.logger.log('Load ' + element)
       const file = fs.readFileSync(element, 'utf8')
       const config=YAML.parse(file)
       try{
@@ -70,7 +77,7 @@ export class AppService {
       }
       config.path=path.dirname(element)
       this.backendsConfig.push(config)
-      this.logger.log('Load ' + config.name)
+      this.logger.log('Loaded ' + config.name)
     }
     this.logger.debug(this.backendsConfig)
 

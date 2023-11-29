@@ -1,4 +1,3 @@
-
 name: 'openldap'
 description: 'Backend for openldap'
 active: 0
@@ -14,4 +13,3 @@ actions:
       exec: 'dummy.sh'
   PING:
       exec: 'ping.sh'
-
