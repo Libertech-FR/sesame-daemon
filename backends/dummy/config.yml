@@ -1,0 +1,22 @@
+name: 'dummy'
+description: 'Dummy backend for tests'
+active: 1
+actions:
+  CHANGEPWD:
+    exec: "dummy.sh"
+    onError: 'stop'
+  RESETPWD:
+    exec: "dummy.sh"
+    onError: 'stop'
+  ADDIDENT:
+    exec: 'dummy.sh'
+    onError: 'stop'
+  UPDATEIDENT:
+    exec: 'dummy.sh'
+    onError: 'stop'
+  DELIDENT:
+    exec: 'dummy.sh'
+    onError: 'stop'
+  PING:
+    exec: 'dummy.sh'
+    onError : 'continue'

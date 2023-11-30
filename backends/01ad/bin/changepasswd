@@ -1,0 +1,15 @@
+#!/bin/bash
+JSON=`cat -`
+DIR=`dirname $0`
+. $DIR/../etc/config.conf
+USER=`echo $JSON|jq -r '.uid'`
+OLDPWD=`echo $JSON|jq -r '.oldPassword'`
+NEWPWD=`echo $JSON|jq -r '.newPassword'`
+# copy script ps1
+scp $DIR/changepassword.ps1 $SSH:.
+ERRORFILE=/tmp/sesame-backend-ad-$$
+ssh $SSH "chcp 65001 >NUL && powershell -ExecutionPolicy Bypass -NonInteractive -File changepassword.ps1 $USER $OLDPWD $NEWPWD" 2>$ERRORFILE
+ERR=$?
+cat $ERRORFILE| tr -d "\r\n" |cut -d'|' -f2 1>&2
+rm -f $ERRORFILE
+exit $ERR

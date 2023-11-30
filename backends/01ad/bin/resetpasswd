@@ -1,0 +1,16 @@
+#!/bin/bash
+#!/bin/bash
+JSON=`cat -`
+DIR=`dirname $0`
+. $DIR/../etc/config.conf
+USER=`echo $JSON|jq -r '.uid'`
+NEWPWD=`echo $JSON|jq -r '.newPassword'`
+# copy script ps1
+scp $DIR/resetpassword.ps1 $SSH:.
+ERRORFILE=/tmp/ad-$$
+ssh $SSH "chcp 65001 >NUL && powershell -ExecutionPolicy Bypass -NonInteractive -File resetpassword.ps1 $USER $NEWPWD" 2>$ERRORFILE
+ERR=$?
+cat $ERRORFILE| tr -d "\r\n" |cut -d'|' -f2 1>&2
+rm -f $ERRORFILE
+exit $ERR
+echo $JSON

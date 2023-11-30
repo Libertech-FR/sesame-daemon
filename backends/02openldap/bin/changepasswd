@@ -1,0 +1,56 @@
+#!/bin/perl -n
+use JSON;
+use Net::LDAP;
+BEGIN: {
+sub readConfig()
+{
+        %param=();
+        $param{'host'}="***REMOVED***";	
+        $param{'dn'}="cn=manager,cn=internal,dc=lyon,dc=archi,dc=fr";	
+        $param{'pwd'}="*****";
+        $param{'base'}="dc=lyon,dc=archi,dc=fr";	
+	return %param;
+}
+}
+my $params=decode_json($_);
+$uid=$params->{'uid'};
+$oldPassword=$params->{'oldPassword'};
+$newPassword=$params->{'newPassword'};
+#connection 
+%p=readConfig();
+#Ouverture de la connexion LDAP
+$ldap=Net::LDAP->new($p{'host'});
+#bind 
+my $mesg=$ldap->bind($p{'dn'},password =>$p{'pwd'});
+if ($mesg->code() > 0)
+{
+        print STDERR "erreur connexion";
+        exit 1;
+}
+#recherche si l uid existe et sont dn 
+my $mesg=$ldap->search(base =>$p{'base'},scope=>2,filter=>"mail=$uid");
+if ($mesg->count == 0)
+{
+        print STDERR "Erreur authentification";
+        exit 2;
+}
+my $myDn=$mesg->entry(0)->dn();
+#rebind du dn pour verifier son mdp 
+my $mesg=$ldap->bind($myDn,password =>$oldPassword);
+if ($mesg->code() > 0)
+{
+        print STDERR "Erreur authentification";
+        exit 3;
+}
+#Ok la connexion est bonne on change le mot de passe
+my $mesg=$ldap->search(base =>$myDn,scope=>0,filter=>"objectclass=*");
+$entry=$mesg->entry(0);
+$entry->replace("userPassword" => $newPassword);
+$mesg=$entry->update($ldap);
+if ($mesg->{resultCode} > 0)
+{
+     print STDERR  "Server error : " . $mesg->error ;
+     exit 3
+}
+print "OK";
+exit 0;

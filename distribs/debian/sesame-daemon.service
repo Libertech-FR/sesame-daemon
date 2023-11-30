@@ -1,0 +1,14 @@
+[Unit]
+Description=sesame-daemon
+
+[Service]
+EnvironmentFile=-/etc/default/sesame-daemon
+ExecStart=/usr/bin/sesame-daemon
+Restart=always
+User=nobody
+# Note Debian/Ubuntu uses 'nogroup', RHEL/Fedora uses 'nobody'
+Group=nogroup
+WorkingDirectory=/var/lib/sesame-daemon
+
+[Install]
+WantedBy=multi-user.target
