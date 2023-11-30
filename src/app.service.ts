@@ -34,7 +34,7 @@ export class AppService {
         }
         if (backend.active === 1){
           this.logger.log('Execute backend command '+ job.name +' '+ backend.name)
-          var task=backend.actions[job.name]
+          let task=backend.actions[job.name]
           this.logger.debug(backend.path +'/bin/'+ task.exec)
           const out=process.spawnSync(backend.path +'/bin/'+ task.exec,[],{
             input: JSON.stringify(job.data)
@@ -46,7 +46,7 @@ export class AppService {
           result.output=out.stdout.toString()
           result.error=out.stderr.toString()
           results.push(result);
-          if (task.onError === 'stop' && output.status != 0 ){
+          if (task.onError === 'stop' && out.status != 0 ){
                this.logger.log('stop on Error ')
                 break
           }
