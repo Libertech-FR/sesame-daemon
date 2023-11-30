@@ -4,13 +4,16 @@ import { AppService } from './app.service';
 import { LogLevel } from '@nestjs/common'
 import ConfigInstance from './config'
 
-
-
-async function bootstrap() {
+declare const module: any
+;(async (): Promise<void> => {
   const app = await NestFactory.createApplicationContext(AppModule,{logger: setLogLevel() as LogLevel[]});
   const appService = app.get(AppService);
   appService.runDaemon()
-}
+  if (module.hot) {
+    module.hot.accept()
+    module.hot.dispose((): Promise<void> => app.close())
+  }
+})()
 function setLogLevel():Array<string>{
   let loggerOptions=['error', 'warn','fatal']
   let configInstance=ConfigInstance()
@@ -33,4 +36,3 @@ function setLogLevel():Array<string>{
   }
   return loggerOptions
 }
-bootstrap();
