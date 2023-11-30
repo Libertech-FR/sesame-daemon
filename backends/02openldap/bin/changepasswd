@@ -7,7 +7,7 @@ sub readConfig()
         %param=();
         $param{'host'}="***REMOVED***";	
         $param{'dn'}="cn=manager,cn=internal,dc=lyon,dc=archi,dc=fr";	
-        $param{'pwd'}="***REMOVED***";	
+        $param{'pwd'}="*****";
         $param{'base'}="dc=lyon,dc=archi,dc=fr";	
 	return %param;
 }
