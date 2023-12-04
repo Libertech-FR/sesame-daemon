@@ -15,8 +15,9 @@ jobs:
           node-version: 'lts/*'
       - run: yarn --frozen-lockfile
       - run: npm install --global pkg
+      - run: yarn build
       - name: Build
-        run: pkg index.js --output sesame-daemon --targets linux,macos,win
+        run: pkg dist/main.js -o sesame-daemon --targets linux,macos,win
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
