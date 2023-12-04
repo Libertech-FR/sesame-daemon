@@ -1,6 +1,6 @@
 name: 'config1'
 description: 'Config1 backend for tests'
-active: 1
+active: 0
 actions:
   CHANGEPWD:
       exec: "exemple.sh"

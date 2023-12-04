@@ -1,9 +1,9 @@
-name: 'dummy'
+name: 'dummy3'
 description: 'Dummy backend for tests'
 active: 1
 actions:
   CHANGEPWD:
-    exec: "dummy.sh"
+    exec: "dummy.ps1"
     onError: 'stop'
   RESETPWD:
     exec: "dummy.sh"
