@@ -8,18 +8,25 @@ import path from 'path';
 import { Logger } from '@nestjs/common';
 import { validateOrReject } from 'class-validator';
 
-export default async function configInitializer(backendsPath: string) {
+const backendsConfig: BackendConfigDto[] = [];
+
+export default async function configInitializer(backendsPath: string): Promise<BackendConfigDto[]> {
+  /**
+   * If backendsConfig is not empty, it cached in memory, return it
+   */
+  if (backendsConfig.length) return backendsConfig;
+
   const logger = new Logger(configInitializer.name);
   logger.log('load backends config');
 
-  const backendsConfig = [];
-  const crawler = new fdir().withBasePath().filter((path) => path.endsWith('.yml'));
+  const crawler = new fdir().withBasePath().filter((path: string) => path.endsWith('.yml'));
   const files = crawler.crawl(backendsPath).sync().sort();
 
   for await (const file of files) {
     logger.log('Load ' + file);
     const data = fs.readFileSync(file, 'utf8');
     const config = YAML.parse(data);
+
     try {
       config.path = path.dirname(file);
       const schema = plainToInstance(BackendConfigDto, config);

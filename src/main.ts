@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { LogLevel } from '@nestjs/common';
-import ConfigInstance from './config';
+import configInstance from './config';
 
 declare const module: any;
 (async (): Promise<void> => {
@@ -17,8 +17,8 @@ declare const module: any;
 
 async function setLogLevel(): Promise<LogLevel[]> {
   let loggerOptions: LogLevel[] = ['error', 'warn', 'fatal'];
-  const configInstance = await ConfigInstance();
-  switch (configInstance['logLevel']) {
+  const config = await configInstance();
+  switch (config['logLevel']) {
     case 'fatal':
       loggerOptions = ['fatal'];
       break;
