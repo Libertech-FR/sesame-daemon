@@ -1,11 +1,11 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Job, Worker } from 'bullmq';
-import { ActionType, BackendConfigDto } from './_dto/Backend-config.dto';
+import { ActionType, BackendConfigDto } from './_dto/backend-config.dto';
 import { Redis } from '@nestjs-modules/ioredis';
 import executorTask from '../_common/tasks/executor.task';
 import { BackendResultInterface } from './_interfaces/backend-result.interface';
-import { ExecutorConfigInterface } from '../_common/interfaces/executor-config.interface';
+import { ExecutorConfigInterface } from '~/_common/interfaces/executor-config.interface';
 import { join } from 'path';
 
 @Injectable()

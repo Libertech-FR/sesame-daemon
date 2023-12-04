@@ -1,5 +1,5 @@
 import { RedisOptions } from 'ioredis';
-import { BackendConfigDto } from './backend-runner/_dto/Backend-config.dto';
+import { BackendConfigDto } from './backend-runner/_dto/backend-config.dto';
 import configInitializer from './_common/backend-initializer/config.initializer';
 import { ExecutorConfigInterface } from './_common/interfaces/executor-config.interface';
 import { resolve } from 'path';
