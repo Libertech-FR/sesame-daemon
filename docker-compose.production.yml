@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  sesame-daemon:
+    image: ghcr.io/libertech-fr/sesame-daemon:latest
+    container_name: ${APP_NAME:-sesame-daemon}
+    restart: "unless-stopped"
+    env_file: ./volumes/api/.env

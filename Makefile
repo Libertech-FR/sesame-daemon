@@ -8,6 +8,9 @@ help:
 	@grep -E '^[-a-zA-Z0-9_\.\/]+:.*?## .*$$' $(MAKEFILE_LIST) \
 		| sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[32m%-15s\033[0m %s\n", $$1, $$2}'
 
+build: ## Build development container
+	@docker compose build $(DEV_CONTAINER_NAME)
+
 dev: ## Run development server
 	@docker compose run -d --rm \
 		--service-ports \
@@ -15,7 +18,15 @@ dev: ## Run development server
 		--name $(DEV_CONTAINER_NAME) \
 		$(DEV_CONTAINER_NAME) yarn start:dev
 
+exec: ## Execute a command in the development container
+	@docker compose run -it --rm $(DEV_CONTAINER_NAME) bash
+
+install: ## Execute a command in the development container
+	@docker compose run -it --rm $(DEV_CONTAINER_NAME) yarn install
+
 dbs: ## Run dependencies for development
+	@docker volume create $(APPNAME)-mongodb
+	@docker compose up -d $(APPNAME)-redis $(APPNAME)-mongo
 	@docker volume create $(APPNAME)-redis
 	@docker run -d --rm \
 		--name $(APPNAME)-redis \
@@ -28,16 +39,6 @@ dbs: ## Run dependencies for development
 		--health-retries=3 \
 		--health-cmd="redis-cli ping || exit 1" \
 		redis || true
-
-exec: ## Execute a command in the development container
-	@docker compose run -it --rm $(DEV_CONTAINER_NAME) bash
-
-install: ## Execute a command in the development container
-	@docker compose run -it --rm $(DEV_CONTAINER_NAME) yarn install
-
-dbs: ## Run dependencies for development
-	@docker volume create $(APPNAME)-mongodb
-	@docker compose up -d $(APPNAME)-redis $(APPNAME)-mongo
 
 stop: ## Stop all containers
 	@docker compose down --remove-orphans
