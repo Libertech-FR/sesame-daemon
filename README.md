@@ -34,18 +34,17 @@ docker exec sesame-daemon yarn
 copier env.exemple en .env
 editer et regler les variable d'environnements 
 ```
-# Host Redis (defaut "localhost")
-REDIS_HOST=redis 
-# Port Redis (defaut 6379)
-REDIS_PORT=6379
-# User redis defaut ''
-REDIS_USER=
-# Mot de passe de User defaut ''
-REDIS_PASSWORD=
-# Chemin des backends par defaul le repertoire backends du projet
+# Host Redis (defaut "redis://localhost:6379/0")
+REDIS_URL=redis://localhost:6379/0 
+
+# Chemin des backends par defaut le repertoire backends du projet
 #BACKENDS_PATH=
-# nom de la queue bullMQ ( defaut: 'backend')
+
+# nom de la queue bullMQ (defaut: 'backend')
 #NAME_QUEUE=
+
+# Nom ou chemin du binaire d'exécution du shell (defaut: true)
+#BACKENDS_EXECUTOR_SHELL=
 ```
 Vous etes pret
 ````bash
@@ -53,16 +52,8 @@ docker exec sesame-daemon yarn start:dev
 ````
 
 ### complation du daemon en un executable 
-
-```
-#npm i -g pkg
-#pkg dist/main.js -o sesame-daemon
-```
-
-### Installation système 
-#### Debian
-
-
+Générer une nouvelle release : [ici](https://github.com/Libertech-Fr/sesame-daemon/actions/workflows/release.yml?event=workflow_dispatch)
+- via le bouton run workflow
 
 ## License
 
