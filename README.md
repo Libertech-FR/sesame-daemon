@@ -31,7 +31,7 @@ docker-compose up -d
 docker exec sesame-daemon yarn
 ````
 #### Lancez l'application en mode dev ou debug 
-copier env.exemple en .env
+copier .env.example en .env
 editer et regler les variable d'environnements 
 ```
 # Host Redis (defaut "redis://localhost:6379/0")
