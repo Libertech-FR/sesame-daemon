@@ -16,6 +16,9 @@
 Daemon pour Sesame. Le demon est chargé d'executer les backends sur les ordres de l'orchestrator
 ## Installation developpement 
 un environnement de developpement est donné en docker 
+
+Copiez le dossier ./backends.example dans ./backends et ajouter vos backends dans ce dossier
+
 ### Docker 
 #### contruisez l'image :
 dans ./docker 
