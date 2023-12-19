@@ -8,6 +8,7 @@ declare const module: any;
   const app = await NestFactory.createApplicationContext(AppModule, {
     logger: await setLogLevel(),
   });
+  await app.init();
 
   if (module.hot) {
     module.hot.accept();
@@ -16,24 +17,14 @@ declare const module: any;
 })();
 
 async function setLogLevel(): Promise<LogLevel[]> {
-  let loggerOptions: LogLevel[] = ['error', 'warn', 'fatal'];
   const config = await configInstance();
-  switch (config['logLevel']) {
-    case 'fatal':
-      loggerOptions = ['fatal'];
-      break;
-    case 'error':
-      loggerOptions = ['error', 'fatal'];
-      break;
-    case 'warn':
-      loggerOptions = ['error', 'warn', 'fatal'];
-      break;
-    case 'info':
-      loggerOptions = ['error', 'warn', 'fatal', 'log', 'verbose'];
-      break;
-    case 'debug':
-      loggerOptions = ['error', 'warn', 'fatal', 'log', 'verbose', 'debug'];
-      break;
-  }
-  return loggerOptions;
+  const logLevelMap: Record<LogLevel | string, LogLevel[]> = {
+    fatal: ['fatal'],
+    error: ['error', 'fatal'],
+    warn: ['error', 'fatal', 'warn'],
+    info: ['error', 'fatal', 'warn', 'log'],
+    debug: ['error', 'fatal', 'warn', 'log', 'debug'],
+    verbose: ['error', 'fatal', 'warn', 'log', 'debug', 'verbose'],
+  };
+  return logLevelMap[config.logLevel] || logLevelMap['warn'];
 }

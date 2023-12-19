@@ -43,6 +43,6 @@ export default async function configInitializer(backendsPath: string): Promise<B
     }
   }
 
-  // logger.debug(backendsConfig)
+  logger.verbose(backendsConfig);
   return backendsConfig;
 }
