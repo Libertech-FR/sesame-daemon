@@ -1,7 +1,7 @@
 <p align="center">
-  <a href="http://sesame.github.io/" target="blank"><img src="./static/sesame-logo.svg" width="200" alt="Sesame Logo" /></a>
+  <a href="https://libertech-fr.github.io/sesame-daemon" target="blank"><img src="./static/sesame-logo.svg" width="200" alt="Sesame Logo" /></a>
 </p>
-<p align="center">Sesame - Un outil de synchronisation des comptes utilisateur</p>
+<p align="center">Sésame daemon - Synchronisation d'Identités Multi-sources</p>
 <p align="center">
   <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/libertech-fr/sesame-daemon/total">
   <img alt="GitHub" src="https://img.shields.io/github/license/libertech-fr/sesame-daemon">
@@ -14,6 +14,10 @@
 ## Description
 
 Daemon pour Sesame. Le demon est chargé d'executer les backends sur les ordres de l'orchestrator
+
+## Architecture du projet
+[Figma](https://www.figma.com/file/OplQ0tHFHS5rFz5K6OCgEd/Sesame?type=whiteboard&node-id=0%3A1&t=ZiPEDwJPp0id8frN-1)
+
 ## Installation developpement 
 un environnement de developpement est donné en docker 
 
