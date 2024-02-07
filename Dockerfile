@@ -3,6 +3,7 @@ FROM node:18-bookworm-slim as builder
 ENV TIMEZONE=Europe/Paris \
     LANGUAGE=fr_FR.UTF-8 \
     LANG=fr_FR.UTF-8 \
+    TERM=xterm \
     DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /data
@@ -18,6 +19,12 @@ RUN yarn install \
 RUN yarn run build
 
 FROM node:18-bookworm-slim as production
+
+ENV TIMEZONE=Europe/Paris \
+    LANGUAGE=fr_FR.UTF-8 \
+    LANG=fr_FR.UTF-8 \
+    TERM=xterm \
+    DEBIAN_FRONTEND=noninteractive
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
