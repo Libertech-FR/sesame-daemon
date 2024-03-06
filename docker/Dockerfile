@@ -1,14 +1,4 @@
-FROM debian:12
-LABEL description="Libertech Dev" \
-      maintainer="Libertech <aide@libertech.fr>" \
-      vendor=Libertech \
-      name="sesam-daemon-dev"
-
-ENV TIMEZONE=Europe/Paris \
-    LANGUAGE=fr_FR.UTF-8 \
-    LANG=fr_FR.UTF-8 \
-    DEBIAN_FRONTEND=noninteractive \
-    TERM=xterm 
+FROM ghcr.io/libertech-fr/sesame-daemon
 
 RUN apt clean -y \
     && apt update -y \
@@ -20,7 +10,7 @@ RUN apt clean -y \
     && locale-gen ${LANG} \
     && dpkg-reconfigure --frontend ${DEBIAN_FRONTEND} locales \
     && apt install --no-install-recommends -yq \
-    procps nodejs npm yarn supervisor 
+    procps supervisor 
 
 RUN npm i -g @nestjs/cli
 
@@ -29,5 +19,3 @@ WORKDIR /data
 COPY ./rootfs /
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
-
-
