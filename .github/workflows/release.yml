@@ -24,7 +24,7 @@ on:
         type: boolean
 
 jobs:
-  build:
+  build-docker:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -45,3 +45,31 @@ jobs:
           # Optional parameters, thoses are default values :
           registry: 'ghcr.io'
           context: .
+
+  build-pkg:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - run: npm install -g yarn
+      - run: yarn --frozen-lockfile
+      - run: npm install --global pkg
+      - run: yarn build
+#      - run: curl -sf https://gobinaries.com/tj/node-prune | sh
+#      - run: node-prune
+      - name: Build
+        run: pkg dist/main.js -o sesame-daemon --targets linux,macos,win -C Brotli
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            sesame-daemon-linux
+            sesame-daemon-macos
+            sesame-daemon-win.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
