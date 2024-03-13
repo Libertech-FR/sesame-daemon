@@ -28,7 +28,7 @@ export default async function configInitializer(backendsPath: string): Promise<B
     const config = YAML.parse(data);
 
     try {
-      config.path = path.dirname(file);
+      if (!config.path) config.path = path.dirname(file);
       const schema = plainToInstance(BackendConfigDto, config);
       await validateOrReject(schema, {
         whitelist: true,

@@ -1,21 +1,21 @@
-import { IsString, IsEnum, IsNumber, IsNotEmpty } from 'class-validator';
+import { IsString, IsEnum, IsBoolean, IsNotEmpty } from 'class-validator';
 
 export enum ActionType {
-  // noinspection JSUnusedGlobalSymbols
-  LISTBACKEND = 'LISTBACKEND',
-  CHANGEPWD = 'CHANGEPWD',
-  RESETPWD = 'RESETPWD',
-  ADDIDENT = 'ADDIDENT',
-  UPDATEIDENT = 'UPDATEIDENT',
-  DELIDENT = 'DELIDENT',
+  LIST_BACKENDS = 'LIST_BACKENDS',
+  IDENTITY_CREATE = 'IDENTITY_CREATE',
+  IDENTITY_UPDATE = 'IDENTITY_UPDATE',
+  IDENTITY_DELETE = 'IDENTITY_DELETE',
+  IDENTITY_PASSWORD_RESET = 'IDENTITY_PASSWORD_RESET',
+  IDENTITY_PASSWORD_CHANGE = 'IDENTITY_PASSWORD_CHANGE',
 }
 
 export class BackendActionDto {
   @IsString()
-  public exec: string;
+  @IsNotEmpty()
+  public script: string;
 
   @IsString()
-  @IsEnum(['pass', 'failed'])
+  @IsEnum(['continue', 'stop'])
   public onError: string;
 }
 
@@ -25,15 +25,19 @@ export class BackendConfigDto {
   public name: string;
 
   @IsString()
-  public description: string;
+  public description?: string;
 
+  /**
+   * Path to the backend script
+   * If not set, it will be the directory of the config file
+   */
   @IsString()
+  @IsNotEmpty()
   public path: string;
 
-  @IsNumber()
+  @IsBoolean()
   @IsNotEmpty()
-  @IsEnum([0, 1])
-  public active: number;
+  public active: boolean;
 
   public actions: Record<ActionType, BackendActionDto>;
 }

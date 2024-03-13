@@ -4,16 +4,16 @@ description: 'Backend for AD'
 active: 0
 actions:
   CHANGEPWD:
-      exec: "changepasswd"
+      script: "changepasswd"
       onError: 'stop'
   RESETPWD:
-      exec: "resetpasswd"
+      script: "resetpasswd"
       onError: 'stop'
-  ADDIDENT:
-      exec: 'dummy.sh'
-  UPDATEIDENT:
-      exec: 'dummy.sh'
+  IDENTITY_CREATE:
+      script: 'dummy.sh'
+  IDENTITY_UPDATE:
+      script: 'dummy.sh'
   DELIDENT:
-      exec: 'dummy.sh'
+      script: 'dummy.sh'
   PING:
-      exec: 'ping.sh'
+      script: 'ping.sh'
