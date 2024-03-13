@@ -1,117 +1,60 @@
-import { Injectable, Logger, OnModuleInit, OnApplicationBootstrap } from '@nestjs/common';
+import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
+import { Injectable, Logger, OnApplicationBootstrap, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Job, Worker } from 'bullmq';
-import { ActionType, BackendConfigDto } from './_dto/backend-config.dto';
-import { Redis } from '@nestjs-modules/ioredis';
-import executorTask from '../_common/tasks/executor.task';
-import { BackendResultInterface } from './_interfaces/backend-result.interface';
-import { ExecutorConfigInterface } from '~/_common/interfaces/executor-config.interface';
-import { join } from 'path';
-import { ExecutorInterface } from './executors.interface';
+import { Worker } from 'bullmq';
+import { ActionType, BackendConfigV1Dto } from './_dto/backend-config-v1.dto';
+import { CatchAllExecutor } from './_executors/catch-all.executor';
 import { ListBackendsExecutor } from './_executors/list-backends.executor';
+import { ExecutorInterface } from './executors.interface';
+import { BackendConfigService } from './backend-config.service';
 
 @Injectable()
 export class BackendRunnerService implements OnApplicationBootstrap, OnModuleInit {
-  private readonly _backendsConfig: BackendConfigDto[] = [];
   private readonly _logger = new Logger(BackendRunnerService.name);
 
   protected executors: Map<string, ExecutorInterface> = new Map<string, ExecutorInterface>();
 
-  public constructor(private readonly config: ConfigService) {
-    this._backendsConfig = this.config.get<BackendConfigDto[]>('backendsConfig');
-  }
-
-  public get backendsConfig() {
+  public get backendsConfig(): BackendConfigService {
     return this._backendsConfig;
   }
 
-  public get logger() {
+  public get logger(): Logger {
     return this._logger;
   }
 
+  public get config(): ConfigService {
+    return this.config;
+  }
+
+  public constructor(
+    private readonly _config: ConfigService,
+    private readonly _backendsConfig: BackendConfigService,
+    @InjectRedis() private readonly redis: Redis,
+  ) {}
+
   public async onModuleInit() {
+    this.executors.set('*', new CatchAllExecutor(this));
     this.executors.set(ActionType.LIST_BACKENDS, new ListBackendsExecutor(this));
+
     this.logger.log('OnModuleInit initialized 🔴');
   }
 
   public async onApplicationBootstrap() {
     const worker = new Worker(
-      this.config.get<string>('nameQueue'),
+      this._config.get<string>('nameQueue'),
       async (job) => {
-        let status = 0;
-        const data = [];
-        for await (const backend of this._backendsConfig) {
-          switch (job.name) {
-            case ActionType.LIST_BACKENDS: {
-              return await this.listBackends(job);
-            }
+        let jobName = job.name;
+        if (!this.executors.has(job.name)) jobName = '*';
+        this.logger.log(`Job ${job.name} received. Try to execute...`);
 
-            default: {
-              if (!backend.active) {
-                this.logger.warn(`backend ${backend.name} is not active`);
-                continue;
-              }
-              this.logger.log(`Execute backend command ${job.name} ${backend.name}`);
-              const result = await this.executeBackend(job, backend);
-              status += result.status;
-              data.push(result);
-              if (backend.actions[job.name].onError === 'stop' && result.status !== 0) {
-                this.logger.log('stop on Error');
-                break;
-              }
-            }
-          }
-        }
-        return {
-          jobId: job.id,
-          status,
-          data,
-        };
+        return this.executors.get(jobName).execute({ job });
       },
       {
-        connection: this.config.get<Redis>('ioredis'),
+        connection: this.redis,
         autorun: false,
       },
     );
     await worker.run();
     this.logger.log('OnApplicationBootstrap initialized 🔴');
-  }
-
-  public async listBackends(job: Job) {
-    this.logger.log('execute LISTBACKEND');
-    return {
-      status: 0,
-      jobId: job.id,
-      data: this._backendsConfig,
-    };
-  }
-
-  public async executeBackend(job: Job, backend: BackendConfigDto): Promise<BackendResultInterface> {
-    const process = await executorTask(join(backend.path, 'bin', backend.actions[job.name].exec), job, {
-      ...this.config.get<ExecutorConfigInterface>('backendExecutorConfig'),
-    });
-    try {
-      if (process.status !== 0) {
-        return {
-          backend: backend.name,
-          status: process.status,
-          error: JSON.parse(process.output),
-        };
-      }
-      return {
-        backend: backend.name,
-        status: process.status,
-        output: JSON.parse(process.output),
-      };
-    } catch (e) {
-      return {
-        backend: backend.name,
-        status: process.status,
-        error: {
-          status: process.status,
-          message: process.error,
-        },
-      };
-    }
   }
 }

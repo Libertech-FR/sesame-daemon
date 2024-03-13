@@ -787,6 +787,13 @@
     path-to-regexp "3.2.0"
     tslib "2.6.2"
 
+"@nestjs/event-emitter@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@nestjs/event-emitter/-/event-emitter-2.0.4.tgz#de7d3986cfeb82639bb95181fab4fe5525437c74"
+  integrity sha512-quMiw8yOwoSul0pp3mOonGz8EyXWHSBTqBy8B0TbYYgpnG1Ix2wGUnuTksLWaaBiiOTDhciaZ41Y5fJZsSJE1Q==
+  dependencies:
+    eventemitter2 "6.4.9"
+
 "@nestjs/platform-express@^10.0.0":
   version "10.2.10"
   resolved "https://registry.yarnpkg.com/@nestjs/platform-express/-/platform-express-10.2.10.tgz#6ff94e5a3f3a15ff39d8044e966fd4ceecd8d068"
@@ -2618,6 +2625,11 @@ etag@~1.8.1:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
   integrity sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==
+
+eventemitter2@6.4.9:
+  version "6.4.9"
+  resolved "https://registry.yarnpkg.com/eventemitter2/-/eventemitter2-6.4.9.tgz#41f2750781b4230ed58827bc119d293471ecb125"
+  integrity sha512-JEPTiaOt9f04oa6NOkc4aH+nVp5I3wEjpHbIPqfgCdD5v5bUzy7xQqwcVO2aDQgOWhI28da57HksMrzK9HlRxg==
 
 events@^3.2.0:
   version "3.3.0"
@@ -4751,6 +4763,11 @@ quick-lru@^5.1.1:
   resolved "https://registry.yarnpkg.com/quick-lru/-/quick-lru-5.1.1.tgz#366493e6b3e42a3a6885e2e99d18f80fb7a8c932"
   integrity sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==
 
+radash@^12.1.0:
+  version "12.1.0"
+  resolved "https://registry.yarnpkg.com/radash/-/radash-12.1.0.tgz#a15a5d745bfe3c3a6428148a606000aefd238560"
+  integrity sha512-b0Zcf09AhqKS83btmUeYBS8tFK7XL2e3RvLmZcm0sTdF1/UUlHSsjXdCcWNxe7yfmAlPve5ym0DmKGtTzP6kVQ==
+
 randombytes@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/randombytes/-/randombytes-2.1.0.tgz#df6f84372f0270dc65cdf6291349ab7a473d4f2a"
@@ -5557,6 +5574,11 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==
+
+types-package-json@^2.0.39:
+  version "2.0.39"
+  resolved "https://registry.yarnpkg.com/types-package-json/-/types-package-json-2.0.39.tgz#940466c69674a42c2453c54a8d5735a2ffb31d47"
+  integrity sha512-c8ua5W1Uu6x7LAwtwSGCl46cHmj+r2eAA+lXR1CluIZotu9V03ZHcGB9wKRZE2oIAX5IzMP/rxDV9g9ikCg9Nw==
 
 typescript@5.2.2:
   version "5.2.2"

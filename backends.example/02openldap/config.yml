@@ -1,15 +1,9 @@
+_version: 1
+
 name: 'openldap'
 description: 'Backend for openldap'
-active: 0
+active: false
 actions:
-  CHANGEPWD:
-      exec: "changepasswd"
-      onError: 'stop'
-  ADDIDENT:
-      exec: 'dummy.sh'
-  UPDATEIDENT:
-      exec: 'dummy.sh'
-  DELIDENT:
-      exec: 'dummy.sh'
-  PING:
-      exec: 'ping.sh'
+  IDENTITY_PASSWORD_CHANGE:
+    exec: "changepasswd"
+    onError: 'stop'

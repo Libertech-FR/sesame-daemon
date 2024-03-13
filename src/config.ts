@@ -1,35 +1,31 @@
 import { RedisOptions } from 'ioredis';
-import { BackendConfigDto } from './backend-runner/_dto/backend-config.dto';
-import configInitializer from './_common/backend-initializer/config.initializer';
 import { ExecutorConfigInterface } from './_common/interfaces/executor-config.interface';
 import { resolve } from 'path';
 
+const logLevel = process.env['LOG_LEVEL'] || 'info';
+
 export interface ConfigInstance {
+  logLevel: string;
   ioredis: {
     uri: string;
     options: RedisOptions;
   };
-  logLevel: string;
-  backendsPath: string;
   nameQueue: string;
-  backendsConfig: BackendConfigDto[];
+  backendsPath: string;
   backendExecutorConfig: ExecutorConfigInterface;
 }
 
-export default async (): Promise<ConfigInstance> => {
-  const backendsPath = resolve(process.env['BACKENDS_PATH'] || __dirname + '/../backends');
-  const backendsConfig = await configInitializer(backendsPath);
+export default (): ConfigInstance => {
   return {
+    logLevel,
     ioredis: {
       uri: process.env['REDIS_URI'] || 'redis://localhost:6379/0',
       options: {
         showFriendlyErrorStack: true,
       },
     },
-    logLevel: process.env['LOG_LEVEL'] || 'info',
     nameQueue: process.env['NAME_QUEUE'] || 'backend',
-    backendsConfig,
-    backendsPath,
+    backendsPath: resolve(process.env['BACKENDS_PATH'] || __dirname + '/../backends'),
     backendExecutorConfig: {
       shell: process.env['BACKENDS_EXECUTOR_SHELL'] || true,
     },

@@ -1,0 +1,24 @@
+_version: 1
+
+name: 'dummy'
+description: 'Dummy backend for tests'
+active: true
+actions:
+  IDENTITY_PASSWORD_CHANGE:
+    script: "dummy.sh"
+    onError: 'stop'
+  IDENTITY_PASSWORD_RESET:
+    script: "dummy.sh"
+    onError: 'stop'
+  IDENTITY_CREATE:
+    script: 'dummy.sh'
+    onError: 'stop'
+  IDENTITY_UPDATE:
+    script: 'dummy.sh'
+    onError: 'stop'
+  IDENTITY_DELETE:
+    script: 'dummy.sh'
+    onError: 'stop'
+  PING_TARGET:
+    script: 'dummy.sh'
+    onError: 'continue'

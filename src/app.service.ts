@@ -1,9 +1,20 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
+import { AbstractService } from './_common/abstracts/abstract.service';
+import { PackageJson } from 'types-package-json';
+import { readFileSync } from 'fs';
+import { pick } from 'radash';
 
 @Injectable()
-export class AppService {
-  private readonly logger = new Logger(AppService.name);
+export class AppService extends AbstractService {
+  protected package: Partial<PackageJson>;
 
-  constructor(private readonly configService: ConfigService) {}
+  public constructor(protected moduleRef: ModuleRef) {
+    super({ moduleRef });
+    this.package = JSON.parse(readFileSync('package.json', 'utf-8'));
+  }
+
+  public getInfo(): Partial<PackageJson> {
+    return pick(this.package, ['name', 'version']);
+  }
 }

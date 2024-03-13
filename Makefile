@@ -59,7 +59,7 @@ dbs: ## Start databases
 		--health-timeout=3s \
 		--health-start-period=5s \
 		--health-retries=3 \
-		--health-cmd="mongo --eval \"db.stats().ok\" || exit 1" \
+		--health-cmd="mongosh --eval \"db.stats().ok\" || exit 1" \
 		mongo:7.0 --replSet rs0 --wiredTigerCacheSizeGB 1.5 || true
 	@docker volume create $(BASE_NAME)-redis
 	@docker run -d --rm \

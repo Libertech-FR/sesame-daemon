@@ -1,19 +1,12 @@
+_version: 1
 
 name: 'AD'
 description: 'Backend for AD'
-active: 0
+active: false
 actions:
-  CHANGEPWD:
-      script: "changepasswd"
-      onError: 'stop'
-  RESETPWD:
-      script: "resetpasswd"
-      onError: 'stop'
-  IDENTITY_CREATE:
-      script: 'dummy.sh'
-  IDENTITY_UPDATE:
-      script: 'dummy.sh'
-  DELIDENT:
-      script: 'dummy.sh'
-  PING:
-      script: 'ping.sh'
+  IDENTITY_PASSWORD_CHANGE:
+    script: "changepasswd"
+    onError: 'stop'
+  IDENTITY_PASSWORD_RESET:
+    script: "resetpasswd"
+    onError: 'stop'

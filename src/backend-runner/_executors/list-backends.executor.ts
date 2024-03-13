@@ -1,15 +1,14 @@
 import { BackendRunnerService } from '../backend-runner.service';
-import { ExecutorInterface } from '../executors.interface';
+import { ExecutorExecuteResponseInterface, ExecutorInterface } from '../executors.interface';
 
 export class ListBackendsExecutor implements ExecutorInterface {
   public constructor(public service: BackendRunnerService) {}
 
-  public async execute({}): Promise<void> {
-    this.service.logger.log('execute LISTBACKEND');
+  public async execute({ job }): Promise<ExecutorExecuteResponseInterface> {
     return {
       status: 0,
       jobId: job.id,
-      data: this.service.backendsConfig,
+      data: this.service.backendsConfig.backendsConfigData,
     };
   }
 }

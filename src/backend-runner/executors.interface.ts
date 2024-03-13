@@ -1,10 +1,14 @@
+import { Job } from 'bullmq';
 import { BackendRunnerService } from './backend-runner.service';
 
-export interface ExecutorExecuteOptionsInterface {}
+export interface ExecutorExecuteOptionsInterface {
+  job: Job<any, any, string>;
+}
 
 export interface ExecutorExecuteResponseInterface {
-    jobId: string;
-    status: number;
+  jobId: string;
+  status: number;
+  data: object;
 }
 
 export interface ExecutorInterface {
