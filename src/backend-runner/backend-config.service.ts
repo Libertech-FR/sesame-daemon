@@ -28,7 +28,7 @@ export class BackendConfigService implements OnModuleInit {
     this.logger.log('Load backends config...');
 
     const crawler = new fdir().withBasePath().filter((path: string) => path.endsWith('.yml'));
-    const files = crawler.crawl(this.config.get<string>('backendsPath')).sync().sort();
+    const files = crawler.crawl(this.config.get<string>('application.backendsPath')).sync().sort();
 
     for await (const file of files) {
       this.logger.log(`Loading ${file}...`);

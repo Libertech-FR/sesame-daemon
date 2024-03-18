@@ -13,4 +13,5 @@ export enum BackendCodesEnum {
   CONNECTION_ERROR = 1 << 2,
   INVALID_LOGIN = 1 << 3,
   INVALID_CREDENTIALS = 1 << 4,
+  INVALID_JSON_RESPONSE = 1 << 5,
 }

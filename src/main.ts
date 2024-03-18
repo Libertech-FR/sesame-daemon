@@ -5,9 +5,9 @@ import { getLogLevel } from './_common/functions/get-log-level';
 
 declare const module: any;
 (async (): Promise<void> => {
-  const config = configInstance();
+  const cfg = configInstance();
   const app = await NestFactory.createApplicationContext(AppModule, {
-    logger: getLogLevel(config.logLevel),
+    logger: getLogLevel(cfg?.application?.logLevel),
   });
   await app.init();
 

@@ -2,32 +2,34 @@ import { RedisOptions } from 'ioredis';
 import { ExecutorConfigInterface } from './_common/interfaces/executor-config.interface';
 import { resolve } from 'path';
 
-const logLevel = process.env['LOG_LEVEL'] || 'info';
-
 export interface ConfigInstance {
-  logLevel: string;
+  application: {
+    logLevel: string;
+    nameQueue: string;
+    backendsPath: string;
+    backendExecutorConfig: ExecutorConfigInterface;
+  };
   ioredis: {
     uri: string;
     options: RedisOptions;
   };
-  nameQueue: string;
-  backendsPath: string;
-  backendExecutorConfig: ExecutorConfigInterface;
 }
 
 export default (): ConfigInstance => {
   return {
-    logLevel,
+    application: {
+      logLevel: process.env['SESAME_LOG_LEVEL'] || 'info',
+      nameQueue: process.env['SESAME_NAME_QUEUE'] || 'sesame',
+      backendsPath: resolve(process.env['SESAME_BACKENDS_PATH'] || __dirname + '/../backends'),
+      backendExecutorConfig: {
+        shell: process.env['SESAME_BACKENDS_EXECUTOR_SHELL'] || true,
+      },
+    },
     ioredis: {
-      uri: process.env['REDIS_URI'] || 'redis://localhost:6379/0',
+      uri: process.env['SESAME_REDIS_URI'] || 'redis://localhost:6379/0',
       options: {
         showFriendlyErrorStack: true,
       },
-    },
-    nameQueue: process.env['NAME_QUEUE'] || 'backend',
-    backendsPath: resolve(process.env['BACKENDS_PATH'] || __dirname + '/../backends'),
-    backendExecutorConfig: {
-      shell: process.env['BACKENDS_EXECUTOR_SHELL'] || true,
     },
   };
 };

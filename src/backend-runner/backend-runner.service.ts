@@ -2,11 +2,12 @@ import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
 import { Injectable, Logger, OnApplicationBootstrap, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Worker } from 'bullmq';
-import { ActionType, BackendConfigV1Dto } from './_dto/backend-config-v1.dto';
 import { CatchAllExecutor } from './_executors/catch-all.executor';
 import { ListBackendsExecutor } from './_executors/list-backends.executor';
-import { ExecutorInterface } from './executors.interface';
+import { ExecutorExecuteResponseInterface, ExecutorInterface } from './executors.interface';
 import { BackendConfigService } from './backend-config.service';
+import { ActionType } from './_enum/action-type.enum';
+import { ExecutorConfigInterface } from '~/_common/interfaces/executor-config.interface';
 
 @Injectable()
 export class BackendRunnerService implements OnApplicationBootstrap, OnModuleInit {
@@ -22,8 +23,8 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
     return this._logger;
   }
 
-  public get config(): ConfigService {
-    return this.config;
+  public get backendExecutorConfig(): ExecutorConfigInterface {
+    return this._config.get<ExecutorConfigInterface>('application.backendExecutorConfig');
   }
 
   public constructor(
@@ -41,20 +42,20 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
 
   public async onApplicationBootstrap() {
     const worker = new Worker(
-      this._config.get<string>('nameQueue'),
-      async (job) => {
+      this._config.get<string>('application.nameQueue'),
+      async (job): Promise<ExecutorExecuteResponseInterface> => {
         let jobName = job.name;
         if (!this.executors.has(job.name)) jobName = '*';
         this.logger.log(`Job ${job.name} received. Try to execute...`);
 
-        return this.executors.get(jobName).execute({ job });
+        return await this.executors.get(jobName).execute({ job });
       },
       {
         connection: this.redis,
         autorun: false,
       },
     );
-    await worker.run();
+    worker.run();
     this.logger.log('OnApplicationBootstrap initialized 🔴');
   }
 }

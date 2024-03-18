@@ -1,3 +1,3 @@
 #!/bin/sh
-echo "Hello Word"
+echo "{\"status\": 0, \"message\": \"dummy backend\"}"
 exit 0

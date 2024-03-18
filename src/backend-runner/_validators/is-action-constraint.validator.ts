@@ -4,7 +4,8 @@ import {
   ValidationArguments,
   validateOrReject,
 } from 'class-validator';
-import { ActionType, BackendConfigActionDto } from '../_dto/backend-config-v1.dto';
+import { BackendConfigActionDto } from '../_dto/backend-config-v1.dto';
+import { ActionType } from '../_enum/action-type.enum';
 
 @ValidatorConstraint({ async: true })
 export class IsActionConstraintValidator implements ValidatorConstraintInterface {

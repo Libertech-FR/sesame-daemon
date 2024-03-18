@@ -1,21 +1,8 @@
 import { Transform, plainToInstance } from 'class-transformer';
 import { IsBoolean, IsEnum, IsNotEmpty, IsString, Validate } from 'class-validator';
 import { IsActionConstraintValidator } from '../_validators/is-action-constraint.validator';
-
-export enum ActionType {
-  LIST_BACKENDS = 'LIST_BACKENDS',
-  PING_TARGET = 'PING_TARGET',
-  IDENTITY_CREATE = 'IDENTITY_CREATE',
-  IDENTITY_UPDATE = 'IDENTITY_UPDATE',
-  IDENTITY_DELETE = 'IDENTITY_DELETE',
-  IDENTITY_PASSWORD_RESET = 'IDENTITY_PASSWORD_RESET',
-  IDENTITY_PASSWORD_CHANGE = 'IDENTITY_PASSWORD_CHANGE',
-}
-
-export enum OnErrorType {
-  CONTINUE = 'continue',
-  STOP = 'stop',
-}
+import { ActionType } from '../_enum/action-type.enum';
+import { OnErrorType } from '../_enum/on-error-type.enum';
 
 export class BackendConfigActionDto {
   @IsString()

@@ -1,11 +1,11 @@
-import executorTask from '~/_common/tasks/executor.task';
+import { executorTask } from '~/_common/tasks/executor.task';
 import { BackendRunnerService } from '../backend-runner.service';
 import { ExecutorExecuteResponseInterface, ExecutorInterface } from '../executors.interface';
 import { join } from 'path';
 import { Job } from 'bullmq';
 import { BackendConfigV1Dto } from '../_dto/backend-config-v1.dto';
 import { BackendResultInterface } from '../_interfaces/backend-result.interface';
-import { ExecutorConfigInterface } from '~/_common/interfaces/executor-config.interface';
+import { BackendCodesEnum } from '../_interfaces/backend-codes.enum';
 
 export class CatchAllExecutor implements ExecutorInterface {
   public constructor(public service: BackendRunnerService) {}
@@ -39,12 +39,13 @@ export class CatchAllExecutor implements ExecutorInterface {
   }
 
   public async executeBackend(job: Job, backend: BackendConfigV1Dto): Promise<BackendResultInterface> {
-    const process = await executorTask(join(backend.path, 'bin', backend.actions[job.name].exec), job, {
-      ...this.service.config.get<ExecutorConfigInterface>('backendExecutorConfig'),
+    const process = await executorTask(join(backend.path, 'bin', backend.actions[job.name].script), job, {
+      ...this.service.backendExecutorConfig,
     });
 
     try {
       if (process.status !== 0) {
+        this.service.logger.error(`Error executing backend ${backend.name}`);
         return {
           backend: backend.name,
           status: process.status,
@@ -52,17 +53,19 @@ export class CatchAllExecutor implements ExecutorInterface {
         };
       }
 
+      this.service.logger.log(`Backend ${backend.name} executed successfully`);
       return {
         backend: backend.name,
         status: process.status,
         output: JSON.parse(process.output),
       };
     } catch (e) {
+      this.service.logger.error(`Error parsing JSON output from backend ${backend.name}`);
       return {
         backend: backend.name,
-        status: process.status,
+        status: BackendCodesEnum.INVALID_JSON_RESPONSE,
         error: {
-          status: process.status,
+          status: BackendCodesEnum.INVALID_JSON_RESPONSE,
           message: process.error,
         },
       };
