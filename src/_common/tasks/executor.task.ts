@@ -10,35 +10,32 @@ export async function executorTask(
   options?: ExecutorConfigInterface,
 ): Promise<ExecutorResponseInterface> {
   return new Promise((resolve, reject) => {
-    const child = spawn(join(command), [], {
+    const jobDataArg = JSON.stringify(job.data);
+    const escapedJobDataArg = `'${jobDataArg.replace(/'/g, "'\\''")}'`;
+
+    const child = spawn(join(command), [escapedJobDataArg], {
       shell: options?.shell ?? true,
     });
 
-    let output = '';
-    let error = '';
+    let outputChunk = '';
+    let errorChunk = '';
 
-    // Ecoute pour la sortie standard (stdout)
     child.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
-      output += data;
+      outputChunk += data;
     });
 
-    // Ecoute pour la sortie d'erreur (stderr)
     child.stderr.on('data', (data) => {
       console.error(`stderr: ${data}`);
-      error += data;
+      errorChunk += data;
     });
-
-    // Envoyer les données de job au processus enfant
-    child.stdin.write(JSON.stringify(job.data));
-    child.stdin.end();
 
     child.on('close', (code) => {
       console.log(`Le processus enfant s'est terminé avec le code ${code}`);
       resolve({
         status: code,
-        output: output,
-        error: error,
+        output: outputChunk?.toString(),
+        error: errorChunk?.toString(),
       });
     });
 
@@ -47,13 +44,4 @@ export async function executorTask(
       reject(spawnError);
     });
   });
-  /**const out = spawnSync(join(command), [], {
-    input: JSON.stringify(job.data),
-    shell: options?.shell ?? true,
-  });
-  return Promise.resolve({
-    status: out.status,
-    output: out.stdout?.toString(),
-    error: out.stderr?.toString(),
-  });**/
 }

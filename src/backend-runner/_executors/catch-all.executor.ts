@@ -4,8 +4,11 @@ import { ExecutorExecuteResponseInterface, ExecutorInterface } from '../executor
 import { join } from 'path';
 import { Job } from 'bullmq';
 import { BackendConfigV1Dto } from '../_dto/backend-config-v1.dto';
-import { BackendResultInterface } from '../_interfaces/backend-result.interface';
+import { BackendResultInfoInterface, BackendResultInterface } from '../_interfaces/backend-result.interface';
 import { BackendCodesEnum } from '../_interfaces/backend-codes.enum';
+import { validateOrReject } from 'class-validator';
+import { BackendResultInfoDto } from '../_dto/backend-result-info.dto';
+import { plainToInstance } from 'class-transformer';
 
 export class CatchAllExecutor implements ExecutorInterface {
   public constructor(public service: BackendRunnerService) {}
@@ -46,29 +49,70 @@ export class CatchAllExecutor implements ExecutorInterface {
     try {
       if (process.status !== 0) {
         this.service.logger.error(`Error executing backend ${backend.name}`);
+        const error = this.extractLastJsonImproved(process.error);
+        const errorSchema = plainToInstance(BackendResultInfoDto, error);
+        await validateOrReject(errorSchema);
+
         return {
           backend: backend.name,
           status: process.status,
-          error: JSON.parse(process.output),
+          error,
         };
       }
 
       this.service.logger.log(`Backend ${backend.name} executed successfully`);
+      const output = this.extractLastJsonImproved(process.output);
+      const outputSchema = plainToInstance(BackendResultInfoDto, output);
+      await validateOrReject(outputSchema);
+
       return {
         backend: backend.name,
         status: process.status,
-        output: JSON.parse(process.output),
+        output,
       };
     } catch (e) {
       this.service.logger.error(`Error parsing JSON output from backend ${backend.name}`);
+
       return {
         backend: backend.name,
         status: BackendCodesEnum.INVALID_JSON_RESPONSE,
-        error: {
-          status: BackendCodesEnum.INVALID_JSON_RESPONSE,
-          message: process.error,
-        },
+        message: `Invalid JSON response from backend: ${process.error || process.output}`,
       };
     }
+  }
+
+  private extractLastJsonImproved(stdout: string): BackendResultInfoInterface {
+    const jsonCandidates = [];
+    let braceCount = 0,
+      inString = false,
+      escape = false,
+      currentJson = '';
+
+    for (const char of stdout) {
+      if (escape) {
+        escape = false;
+      } else if (char === '\\') {
+        escape = true;
+      } else if (char === '"') {
+        inString = !inString;
+      } else if (!inString && char === '{') {
+        braceCount++;
+        if (braceCount === 1) {
+          currentJson = char;
+          continue;
+        }
+      } else if (!inString && char === '}') {
+        braceCount--;
+      }
+
+      if (braceCount > 0) currentJson += char;
+      if (braceCount === 0 && currentJson !== '') {
+        currentJson += char;
+        jsonCandidates.push(currentJson);
+        currentJson = '';
+      }
+    }
+
+    return JSON.parse(jsonCandidates[jsonCandidates.length - 1]);
   }
 }

@@ -1,6 +1,7 @@
 export interface BackendResultInterface {
   backend: string;
   status: number;
+  message?: string;
   output?: BackendResultInfoInterface;
   error?: BackendResultInfoInterface;
 }
