@@ -48,7 +48,9 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
         if (!this.executors.has(job.name)) jobName = '*';
         this.logger.log(`Job ${job.name} received. Try to execute...`);
 
-        return await this.executors.get(jobName).execute({ job });
+        const result = await this.executors.get(jobName).execute({ job });
+        await job.updateProgress(100);
+        return result;
       },
       {
         connection: this.redis,
