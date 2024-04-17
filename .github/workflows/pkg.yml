@@ -10,6 +10,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
@@ -20,8 +21,38 @@ jobs:
       - run: yarn build
 #      - run: curl -sf https://gobinaries.com/tj/node-prune | sh
 #      - run: node-prune
+
       - name: Build
         run: pkg dist/main.js -o sesame-daemon --targets linux,macos,win -C Brotli
+
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: sesame-daemon-linux
+
+      - name: Init deb package
+        run: |
+          mkdir -p .debpkg/usr/bin
+          cp sesame-daemon-linux .debpkg/usr/bin/sesame-daemon
+          mkdir -p .debpkg/var/lib/sesame-daemon/backends
+          cp -r ./backends.example .debpkg/var/lib/sesame-daemon/backends
+          chmod +x .debpkg/DEBIAN/postinst
+          chmod +x .debpkg/DEBIAN/postrm
+
+      - name: Create deb package
+        uses: jiro4989/build-deb-action@v3
+        with:
+          package: sesame-daemon
+          package_root: .debpkg
+          maintainer: Libertech-FR
+          version: ${{ github.ref }} # refs/tags/v*.*.*
+          arch: 'amd64'
+          desc: 'Sesame Daemon'
+
+      - name: test
+        run: |
+          ls -lisah
+
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
