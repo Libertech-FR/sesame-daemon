@@ -70,7 +70,7 @@ jobs:
       - name: Download a Build Artifact
         uses: actions/download-artifact@v3
         with:
-          name: sesame-daemon-${{ matrix.target }}
+          name: sesame-daemon-linux
 
       - name: Init deb package
         run: |
