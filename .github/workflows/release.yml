@@ -68,6 +68,9 @@ jobs:
         run: pkg dist/main.js -o sesame-daemon --targets linux,macos,win -C Brotli
 
       - name: Init deb package
+        with:
+          files: |
+            sesame-daemon-linux
         run: |
           mkdir -p .debpkg/usr/bin
           cp sesame-daemon-linux .debpkg/usr/bin/sesame-daemon
