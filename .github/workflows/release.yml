@@ -69,6 +69,7 @@ jobs:
 
       - name: Init deb package
         run: |
+          mkdir -p .debpkg/usr/bin
           cp sesame-daemon-linux .debpkg/usr/bin/sesame-daemon
           mkdir -p .debpkg/var/lib/sesame-daemon/backends
           cp -r ./backends.example .debpkg/var/lib/sesame-daemon/backends
