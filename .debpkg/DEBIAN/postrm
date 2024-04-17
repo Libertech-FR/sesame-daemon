@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "remove" ]; then
+    # Désactivation et suppression du fichier de service
+    systemctl stop sesame-daemon.service
+    systemctl disable sesame-daemon.service
+    rm /lib/systemd/system/sesame-daemon.service
+
+    # Rechargement du démon systemd pour enlever le fichier de service
+    systemctl daemon-reload
+fi
+
+exit 0

@@ -1,0 +1,6 @@
+# Default settings for sesame-backend
+
+# Options for sesame daemon
+SESAME_LOG_LEVEL=INFO
+SESAME_REDIS_URI=redis://localhost:6379/0
+SESAME_BACKENDS_PATH=/var/lib/sesame-daemon/backends

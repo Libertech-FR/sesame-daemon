@@ -1,0 +1,12 @@
+Source: sesame-daemon
+Section: utils
+Priority: optional
+Maintainer: Libertech <noreply@libertech.fr>
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.6
+
+Package: sesame-daemon
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Le daemon Sesame pour contrôler vos dispositifs
+ Le daemon Sesame permet de contrôler vos dispositifs à distance.

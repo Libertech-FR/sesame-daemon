@@ -1,0 +1,16 @@
+#!/bin/sh
+set -e
+
+# Installation du fichier de service
+DEB_MAINT_SCRIPT_PACKAGE=sesame-daemon
+SERVICE_FILE=/lib/systemd/system/$DEB_MAINT_SCRIPT_PACKAGE.service
+cp /usr/share/$DEB_MAINT_SCRIPT_PACKAGE/$DEB_MAINT_SCRIPT_PACKAGE.service $SERVICE_FILE
+
+# Rechargement du démon systemd pour prendre en compte le nouveau fichier de service
+systemctl daemon-reload
+
+# Activation du service systemd
+systemctl enable $DEB_MAINT_SCRIPT_PACKAGE.service
+systemctl start $DEB_MAINT_SCRIPT_PACKAGE.service
+
+exit 0
