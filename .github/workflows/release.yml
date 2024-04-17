@@ -84,6 +84,8 @@ jobs:
           cp sesame-daemon-linux .debpkg/usr/bin/sesame-daemon
           mkdir -p .debpkg/var/lib/sesame-daemon/backends
           cp -r ./backends.example .debpkg/var/lib/sesame-daemon/backends
+          chmod +x .debpkg/DEBIAN/postinst
+          chmod +x .debpkg/DEBIAN/postrm
 
       - name: Set Package Version
         run: |
