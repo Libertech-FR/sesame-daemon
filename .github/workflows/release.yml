@@ -85,13 +85,16 @@ jobs:
           mkdir -p .debpkg/var/lib/sesame-daemon/backends
           cp -r ./backends.example .debpkg/var/lib/sesame-daemon/backends
 
+      - name: Set Package Version
+        run: echo "PACKAGE_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')" >> $GITHUB_ENV
+
       - name: Create deb package
         uses: jiro4989/build-deb-action@v3
         with:
           package: sesame-daemon
           package_root: .debpkg
           maintainer: Libertech-FR
-          version: ${{ github.ref }} # refs/tags/v*.*.*
+          version: ${{ env.PACKAGE_VERSION }} # ${{ github.ref }} # refs/tags/v*.*.*
           arch: 'amd64'
           desc: 'Sesame Daemon'
 
