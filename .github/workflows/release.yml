@@ -67,12 +67,12 @@ jobs:
       - name: Build
         run: pkg dist/main.js -o sesame-daemon --targets linux,macos,win -C Brotli
 
-      - name: Init deb package
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v3
         with:
-          files: |
-            sesame-daemon-linux
-            sesame-daemon-macos
-            sesame-daemon-win.exe
+          name: sesame-daemon-${{ matrix.target }}
+
+      - name: Init deb package
         run: |
           mkdir -p .debpkg/usr/bin
           cp sesame-daemon-linux .debpkg/usr/bin/sesame-daemon
