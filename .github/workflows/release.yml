@@ -90,7 +90,6 @@ jobs:
       - name: Set Package Version
         run: |
           echo "PACKAGE_VERSION=$(cat package.json | jq .version -r)" >> $GITHUB_ENV
-          echo $GITHUB_ENV
 
 
       - name: Create deb package
@@ -102,13 +101,3 @@ jobs:
           version: ${{ env.PACKAGE_VERSION }} # ${{ github.ref }} # refs/tags/v*.*.*
           arch: 'amd64'
           desc: 'Sesame Daemon'
-
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            sesame-daemon-linux
-            sesame-daemon-macos
-            sesame-daemon-win.exe
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
