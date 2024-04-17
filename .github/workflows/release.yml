@@ -67,6 +67,12 @@ jobs:
       - name: Build
         run: pkg dist/main.js -o sesame-daemon --targets linux,macos,win -C Brotli
 
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: sesame-daemon-linux
+          path: sesame-daemon-linux
+
       - name: Download a Build Artifact
         uses: actions/download-artifact@v3
         with:
