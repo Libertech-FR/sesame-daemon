@@ -54,11 +54,11 @@ RUN yarn install \
   --prefer-offline \
   --pure-lockfile \
   --non-interactive \
-  --production=true \
-  && yarn cache clean \
-  && yarn autoclean --init \
-  && yarn autoclean --force
+  --production=true
+# && yarn cache clean \
+# && yarn autoclean --init \
+# && yarn autoclean --force
 
 COPY --from=builder /data/dist ./dist
 
-CMD ["yarn", "start:prod"]
+CMD ["yarn", "run", "start:prod"]
