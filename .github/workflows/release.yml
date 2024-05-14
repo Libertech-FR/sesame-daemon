@@ -54,6 +54,50 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Git
+        shell: bash
+        run: |
+          git config user.email "github@action.com"
+          git config user.name "Github Action"
+          echo ${{ secrets.GITHUB_TOKEN }} > token.txt
+          git config credential.helper "store --file=token.txt"
+
+      - name: Update version
+        shell: bash
+        run: |
+          echo NEW_VERSION=$(yarn version --${{ inputs.version_increment }} --json | jq -r '.data | select(contains("New version")) | split(":")[1] | gsub(" ";"")') >> $GITHUB_ENV
+        env:
+          REF: ${{ github.ref }}
+
+      - name: Push to unprotected branch
+        if: inputs.is_branch_protected == 'false'
+        shell: bash
+        run: |
+          git push --follow-tags
+        env:
+          REF: ${{ github.ref }}
+
+      - name: Push to protected branch
+        if: inputs.is_branch_protected == 'true'
+        uses: CasperWA/push-protected@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+          unprotect_reviews: true
+          tags: true
+
+      - name: Publish release
+        uses: ncipollo/release-action@v1
+        with:
+          name: Release ${{ env.NEW_VERSION }}
+          commit: ${{ env.REF }}
+          draft: false
+          prerelease: false
+          generateReleaseNotes: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          makeLatest: ${{ inputs.latest }}
+          tag: ${{ env.NEW_VERSION }}
+
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
@@ -102,42 +146,6 @@ jobs:
           version: ${{ env.PACKAGE_VERSION }} # ${{ github.ref }} # refs/tags/v*.*.*
           arch: 'amd64'
           desc: 'Sesame Daemon'
-
-      - name: Update version
-        shell: bash
-        run: |
-          echo NEW_VERSION=$(yarn version --${{ inputs.version_increment }} --json | jq -r '.data | select(contains("New version")) | split(":")[1] | gsub(" ";"")') >> $GITHUB_ENV
-        env:
-          REF: ${{ github.ref }}
-
-      - name: Push to unprotected branch
-        if: inputs.is_branch_protected == 'false'
-        shell: bash
-        run: |
-          git push --follow-tags
-        env:
-          REF: ${{ github.ref }}
-
-      - name: Push to protected branch
-        if: inputs.is_branch_protected == 'true'
-        uses: CasperWA/push-protected@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
-          unprotect_reviews: true
-          tags: true
-
-      - name: Publish release
-        uses: ncipollo/release-action@v1
-        with:
-          name: Release ${{ env.NEW_VERSION }}
-          commit: ${{ env.REF }}
-          draft: false
-          prerelease: false
-          generateReleaseNotes: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-          makeLatest: ${{ inputs.latest }}
-          tag: ${{ env.NEW_VERSION }}
 
       - name: Release
         uses: svenstaro/upload-release-action@v2
