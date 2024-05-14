@@ -111,4 +111,3 @@ jobs:
           tag: ${{ env.PACKAGE_VERSION }}
           overwrite: true
           body: "This is my release text"
-
