@@ -109,6 +109,23 @@ jobs:
         env:
           REF: ${{ github.ref }}
 
+      - name: Push to unprotected branch
+        if: inputs.is_branch_protected == 'false'
+        shell: bash
+        run: |
+          git push --follow-tags
+        env:
+          REF: ${{ github.ref }}
+
+      - name: Push to protected branch
+        if: inputs.is_branch_protected == 'true'
+        uses: CasperWA/push-protected@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+          unprotect_reviews: true
+          tags: true
+
       - name: Publish release
         uses: ncipollo/release-action@v1
         with:
@@ -127,6 +144,6 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: sesame-daemon-linux
           asset_name: sesame-daemon-linux
-          tag: ${{ env.PACKAGE_VERSION }}
+          tag: ${{ env.NEW_VERSION }}
           overwrite: true
           body: "This is my release text"
