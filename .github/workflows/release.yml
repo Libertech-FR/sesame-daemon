@@ -100,7 +100,7 @@ jobs:
           maintainer: Libertech-FR
           version: ${{ env.PACKAGE_VERSION }} # ${{ github.ref }} # refs/tags/v*.*.*
           arch: 'amd64'
-          desc: 'Sesame Daemon'- name: Publish release
+          desc: 'Sesame Daemon'
 
       - name: Update version
         shell: bash
@@ -109,7 +109,7 @@ jobs:
         env:
           REF: ${{ github.ref }}
 
-      - name: Create release
+      - name: Publish release
         uses: ncipollo/release-action@v1
         with:
           name: Release ${{ env.NEW_VERSION }}
