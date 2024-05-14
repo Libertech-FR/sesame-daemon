@@ -107,7 +107,8 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: sesame-daemon-linux
-          asset_name: mything
+          asset_name: sesame-daemon-linux
           tag: ${{ env.PACKAGE_VERSION }}
           overwrite: true
           body: "This is my release text"
+
