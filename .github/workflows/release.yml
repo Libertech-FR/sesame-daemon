@@ -151,7 +151,6 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: sesame-daemon-linux
-          asset_name: sesame-daemon-*
+          file: sesame-daemon-*
           tag: ${{ env.NEW_VERSION }}
           overwrite: true
