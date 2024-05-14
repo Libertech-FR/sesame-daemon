@@ -24,27 +24,27 @@ on:
         type: boolean
 
 jobs:
-  build-docker:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
+  # build-docker:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: write
+  #     packages: write
 
-    steps:
-      - name: Build docker
-        uses: Libertech-FR/lt-actions/release@main
-        with:
-          version_increment: ${{ github.event.inputs.version_increment }}
-          build_docker_image: ${{ github.event.inputs.build_docker_image }}
-          latest: ${{ github.event.inputs.latest }}
-          repository: ${{ github.repository }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          access_token: ${{ secrets.GITHUB_TOKEN }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          # Optional parameters, thoses are default values :
-          registry: 'ghcr.io'
-          context: .
+  #   steps:
+  #     - name: Build docker
+  #       uses: Libertech-FR/lt-actions/release@main
+  #       with:
+  #         version_increment: ${{ github.event.inputs.version_increment }}
+  #         build_docker_image: ${{ github.event.inputs.build_docker_image }}
+  #         latest: ${{ github.event.inputs.latest }}
+  #         repository: ${{ github.repository }}
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
+  #         access_token: ${{ secrets.GITHUB_TOKEN }}
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #         # Optional parameters, thoses are default values :
+  #         registry: 'ghcr.io'
+  #         context: .
 
   build-pkg:
     runs-on: ubuntu-latest
@@ -100,7 +100,26 @@ jobs:
           maintainer: Libertech-FR
           version: ${{ env.PACKAGE_VERSION }} # ${{ github.ref }} # refs/tags/v*.*.*
           arch: 'amd64'
-          desc: 'Sesame Daemon'
+          desc: 'Sesame Daemon'- name: Publish release
+
+      - name: Update version
+        shell: bash
+        run: |
+          echo NEW_VERSION=$(yarn version --${{ inputs.version_increment }} --json | jq -r '.data | select(contains("New version")) | split(":")[1] | gsub(" ";"")') >> $GITHUB_ENV
+        env:
+          REF: ${{ github.ref }}
+
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          name: Release ${{ env.NEW_VERSION }}
+          commit: ${{ env.REF }}
+          draft: false
+          prerelease: false
+          generateReleaseNotes: true
+          token: ${{ inputs.github_token }}
+          makeLatest: ${{ inputs.latest }}
+          tag: ${{ env.NEW_VERSION }}
 
       - name: Release
         uses: svenstaro/upload-release-action@v2
