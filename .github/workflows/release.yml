@@ -12,16 +12,16 @@ on:
           - 'major'
           - 'minor'
           - 'patch'
-      build_docker_image:
-        description: "Construire l'image docker ?"
-        required: true
-        default: true
-        type: boolean
-      latest:
-        description: "Tagger l'image docker avec le tag 'latest' ?"
-        required: true
-        default: true
-        type: boolean
+      # build_docker_image:
+      #   description: "Construire l'image docker ?"
+      #   required: true
+      #   default: true
+      #   type: boolean
+      # latest:
+      #   description: "Tagger l'image docker avec le tag 'latest' ?"
+      #   required: true
+      #   default: true
+      #   type: boolean
 
 jobs:
   # build-docker:
