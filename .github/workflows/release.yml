@@ -70,21 +70,19 @@ jobs:
           REF: ${{ github.ref }}
 
       - name: Push to unprotected branch
-        if: inputs.is_branch_protected == 'false'
         shell: bash
         run: |
           git push --follow-tags
         env:
           REF: ${{ github.ref }}
 
-      - name: Push to protected branch
-        if: inputs.is_branch_protected == 'true'
-        uses: CasperWA/push-protected@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
-          unprotect_reviews: true
-          tags: true
+      # - name: Push to protected branch
+      #   uses: CasperWA/push-protected@v2
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     branch: main
+      #     unprotect_reviews: true
+      #     tags: true
 
       - name: Publish release
         uses: ncipollo/release-action@v1
