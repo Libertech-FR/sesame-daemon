@@ -117,7 +117,7 @@ jobs:
           draft: false
           prerelease: false
           generateReleaseNotes: true
-          token: ${{ inputs.github_token }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           makeLatest: ${{ inputs.latest }}
           tag: ${{ env.NEW_VERSION }}
 
