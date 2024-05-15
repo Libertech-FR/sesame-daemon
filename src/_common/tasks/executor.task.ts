@@ -11,11 +11,15 @@ export async function executorTask(
 ): Promise<ExecutorResponseInterface> {
   return new Promise((resolve, reject) => {
     const jobDataArg = JSON.stringify(job.data);
-    const escapedJobDataArg = `'${jobDataArg.replace(/'/g, "'\\''")}'`;
+    // const escapedJobDataArg = `'${jobDataArg.replace(/'/g, "'\\''")}'`;
 
-    const child = spawn(join(command), [escapedJobDataArg], {
+    const child = spawn(join(command), {
       shell: options?.shell ?? true,
+      // stdio: 'pipe',
     });
+
+    child.stdin.write(jobDataArg);
+    child.stdin.end();
 
     let outputChunk = '';
     let errorChunk = '';

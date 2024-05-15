@@ -29,6 +29,7 @@ export default (): ConfigInstance => {
       uri: process.env['SESAME_REDIS_URI'] || 'redis://localhost:6379/0',
       options: {
         showFriendlyErrorStack: true,
+        maxRetriesPerRequest: null,
       },
     },
   };

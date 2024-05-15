@@ -1,4 +1,4 @@
-import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
+import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Injectable, Logger, OnApplicationBootstrap, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Worker } from 'bullmq';
@@ -8,6 +8,7 @@ import { ExecutorExecuteResponseInterface, ExecutorInterface } from './executors
 import { BackendConfigService } from './backend-config.service';
 import { ActionType } from './_enum/action-type.enum';
 import { ExecutorConfigInterface } from '~/_common/interfaces/executor-config.interface';
+import Redis from 'ioredis';
 
 @Injectable()
 export class BackendRunnerService implements OnApplicationBootstrap, OnModuleInit {
@@ -31,7 +32,7 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
     private readonly _config: ConfigService,
     private readonly _backendsConfig: BackendConfigService,
     @InjectRedis() private readonly redis: Redis,
-  ) {}
+  ) { }
 
   public async onModuleInit() {
     this.executors.set('*', new CatchAllExecutor(this));
