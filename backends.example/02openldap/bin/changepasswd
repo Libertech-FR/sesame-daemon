@@ -5,7 +5,7 @@ BEGIN: {
 sub readConfig()
 {
         %param=();
-        $param{'host'}="***REMOVED***";	
+        $param{'host'}="10.242.242.15";	
         $param{'dn'}="cn=manager,cn=internal,dc=lyon,dc=archi,dc=fr";	
         $param{'pwd'}="*****";
         $param{'base'}="dc=lyon,dc=archi,dc=fr";	
