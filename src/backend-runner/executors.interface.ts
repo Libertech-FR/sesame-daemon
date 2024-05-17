@@ -8,7 +8,7 @@ export interface ExecutorExecuteOptionsInterface {
 export interface ExecutorExecuteResponseInterface {
   jobId: string;
   status: number;
-  data: object;
+  data: Array<any>;
 }
 
 export interface ExecutorInterface {

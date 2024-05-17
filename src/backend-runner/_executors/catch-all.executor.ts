@@ -6,16 +6,22 @@ import { Job } from 'bullmq';
 import { BackendConfigV1Dto } from '../_dto/backend-config-v1.dto';
 import { BackendResultInfoInterface, BackendResultInterface } from '../_interfaces/backend-result.interface';
 import { BackendCodesEnum } from '../_interfaces/backend-codes.enum';
-import { validateOrReject } from 'class-validator';
+import { ValidationError, validateOrReject } from 'class-validator';
 import { BackendResultInfoDto } from '../_dto/backend-result-info.dto';
 import { plainToInstance } from 'class-transformer';
 
+interface ValidationRecursive {
+  [key: string]: string;
+}
+
 export class CatchAllExecutor implements ExecutorInterface {
-  public constructor(public service: BackendRunnerService) {}
+  public constructor(public service: BackendRunnerService) { }
 
   public async execute({ job }): Promise<ExecutorExecuteResponseInterface> {
     let status = 0;
     const data = [];
+
+    const numberOfBackends = this.service.backendsConfig.backendsConfigData.length;
 
     for await (const backend of this.service.backendsConfig.backendsConfigData) {
       if (!backend.active) {
@@ -32,6 +38,8 @@ export class CatchAllExecutor implements ExecutorInterface {
         this.service.logger.log('stop on Error');
         break;
       }
+
+      await job.updateProgress(100 / numberOfBackends);
     }
 
     return {
@@ -49,7 +57,7 @@ export class CatchAllExecutor implements ExecutorInterface {
     try {
       if (process.status !== 0) {
         this.service.logger.error(`Error executing backend ${backend.name}`);
-        const error = this.extractLastJsonImproved(process.error);
+        const error = this.extractLastJsonImproved(process.error || process.output);
         const errorSchema = plainToInstance(BackendResultInfoDto, error);
         await validateOrReject(errorSchema);
 
@@ -70,18 +78,34 @@ export class CatchAllExecutor implements ExecutorInterface {
         status: process.status,
         output,
       };
-    } catch (e) {
-      this.service.logger.error(`Error parsing JSON output from backend ${backend.name}`);
+    } catch (errors) {
+      console.log('errors', errors)
+      let validations: ValidationRecursive = {};
+      for (const error of errors) {
+        validations = { ...validations, ...this.validationRecursive(error) };
+      }
+
+      this.service.logger.error(`Invalid JSON response from backend ${backend.name}, erreur de validation : ${Object.keys(validations).join(', ')}`.trim());
 
       return {
         backend: backend.name,
         status: BackendCodesEnum.INVALID_JSON_RESPONSE,
-        message: `Invalid JSON response from backend: ${process.error || process.output}`,
+        message: `Erreur de validation : ${Object.keys(validations).join(', ')}`.trim(),
+        error: {
+          status: BackendCodesEnum.INVALID_JSON_RESPONSE,
+          message: `Erreur de validation : ${Object.keys(validations).join(', ')}`.trim(),
+          data: validations,
+        },
       };
     }
   }
 
   private extractLastJsonImproved(stdout: string): BackendResultInfoInterface {
+    if (!stdout) return {
+      status: BackendCodesEnum.INVALID_JSON_RESPONSE,
+      message: 'No output',
+    }
+
     const jsonCandidates = [];
     let braceCount = 0,
       inString = false,
@@ -113,6 +137,32 @@ export class CatchAllExecutor implements ExecutorInterface {
       }
     }
 
+    if (jsonCandidates.length === 0) return {
+      status: BackendCodesEnum.INVALID_JSON_RESPONSE,
+      message: 'No JSON output',
+    }
+
     return JSON.parse(jsonCandidates[jsonCandidates.length - 1]);
+  }
+
+  private validationRecursive(error: ValidationError, prefix = ''): ValidationRecursive {
+    let validations = {};
+    if (error.constraints) {
+      validations[`${prefix + error.property}`] = Object.values(error.constraints)[0];
+    }
+    if (error.children.length > 0) {
+      for (const errorChild of error.children) {
+        if (errorChild.constraints) {
+          validations[`${prefix + error.property}.${errorChild.property}`] = Object.values(errorChild.constraints)[0];
+        }
+        if (errorChild.children.length > 0) {
+          validations = {
+            ...validations,
+            ...this.validationRecursive(errorChild, `${prefix + error.property}.${errorChild.property}.`),
+          };
+        }
+      }
+    }
+    return validations;
   }
 }

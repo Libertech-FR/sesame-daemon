@@ -1,7 +1,7 @@
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Injectable, Logger, OnApplicationBootstrap, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Worker } from 'bullmq';
+import { UnrecoverableError, Worker } from 'bullmq';
 import { CatchAllExecutor } from './_executors/catch-all.executor';
 import { ListBackendsExecutor } from './_executors/list-backends.executor';
 import { ExecutorExecuteResponseInterface, ExecutorInterface } from './executors.interface';
@@ -50,7 +50,19 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
         this.logger.log(`Job ${job.name} received. Try to execute...`);
 
         const result = await this.executors.get(jobName).execute({ job });
-        await job.updateProgress(100);
+        this.logger.verbose(`Job ${job.name} executed with status ${result.status}`);
+
+        if (result.status !== 0) {
+          this.logger.error(`Job ${job.name} failed with status ${result.status}`);
+          const errMsg = []
+          for (const data of result.data) {
+            errMsg.push(data?.error?.message || 'No error message');
+          }
+
+          throw new UnrecoverableError(`Job ${job.name} failed with status ${result.status}: ${errMsg.join(', ')}`);
+        }
+
+        this.logger.log(`Job ${job.name} success with status ${result.status}`);
         return result;
       },
       {
