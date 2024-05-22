@@ -5,10 +5,10 @@ import { join } from 'path';
 import { Job } from 'bullmq';
 import { BackendConfigV1Dto } from '../_dto/backend-config-v1.dto';
 import { BackendResultInfoInterface, BackendResultInterface } from '../_interfaces/backend-result.interface';
-import { BackendCodesEnum } from '../_interfaces/backend-codes.enum';
 import { ValidationError, validateOrReject } from 'class-validator';
-import { BackendResultInfoDto } from '../_dto/backend-result-info.dto';
+import { BackendResultInfoErrorDto, BackendResultInfoSuccessDto } from '../_dto/backend-result-info.dto';
 import { plainToInstance } from 'class-transformer';
+import { BackendCodesEnumError } from '../_interfaces/backend-codes.enum';
 
 interface ValidationRecursive {
   [key: string]: string;
@@ -58,7 +58,7 @@ export class CatchAllExecutor implements ExecutorInterface {
       if (process.status !== 0) {
         this.service.logger.error(`Error executing backend ${backend.name}`);
         const error = this.extractLastJsonImproved(process.error || process.output);
-        const errorSchema = plainToInstance(BackendResultInfoDto, error);
+        const errorSchema = plainToInstance(BackendResultInfoErrorDto, error);
         await validateOrReject(errorSchema);
 
         return {
@@ -70,7 +70,7 @@ export class CatchAllExecutor implements ExecutorInterface {
 
       this.service.logger.log(`Backend ${backend.name} executed successfully`);
       const output = this.extractLastJsonImproved(process.output);
-      const outputSchema = plainToInstance(BackendResultInfoDto, output);
+      const outputSchema = plainToInstance(BackendResultInfoSuccessDto, output);
       await validateOrReject(outputSchema);
 
       return {
@@ -89,10 +89,10 @@ export class CatchAllExecutor implements ExecutorInterface {
 
       return {
         backend: backend.name,
-        status: BackendCodesEnum.INVALID_JSON_RESPONSE,
+        status: BackendCodesEnumError.INVALID_JSON_RESPONSE,
         message: `Erreur de validation : ${Object.keys(validations).join(', ')}`.trim(),
         error: {
-          status: BackendCodesEnum.INVALID_JSON_RESPONSE,
+          status: BackendCodesEnumError.INVALID_JSON_RESPONSE,
           message: `Erreur de validation : ${Object.keys(validations).join(', ')}`.trim(),
           data: validations,
         },
@@ -102,7 +102,7 @@ export class CatchAllExecutor implements ExecutorInterface {
 
   private extractLastJsonImproved(stdout: string): BackendResultInfoInterface {
     if (!stdout) return {
-      status: BackendCodesEnum.INVALID_JSON_RESPONSE,
+      status: BackendCodesEnumError.INVALID_JSON_RESPONSE,
       message: 'No output',
     }
 
@@ -138,7 +138,7 @@ export class CatchAllExecutor implements ExecutorInterface {
     }
 
     if (jsonCandidates.length === 0) return {
-      status: BackendCodesEnum.INVALID_JSON_RESPONSE,
+      status: BackendCodesEnumError.INVALID_JSON_RESPONSE,
       message: 'No JSON output',
     }
 
