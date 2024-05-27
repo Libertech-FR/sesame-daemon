@@ -4,13 +4,35 @@ import { ExecutorResponseInterface } from '../interfaces/executor-response.inter
 import { ExecutorConfigInterface } from '../interfaces/executor-config.interface';
 import { join } from 'path';
 
+function convertNullToEmptyString(obj) {
+  if (obj === null) {
+    return "";
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(convertNullToEmptyString);
+  }
+
+  if (typeof obj === 'object') {
+    const newObj = {};
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        newObj[key] = convertNullToEmptyString(obj[key]);
+      }
+    }
+    return newObj;
+  }
+
+  return obj;
+}
+
 export async function executorTask(
   command: string,
   job: Job,
   options?: ExecutorConfigInterface,
 ): Promise<ExecutorResponseInterface> {
   return new Promise((resolve, reject) => {
-    const jobDataArg = JSON.stringify(job.data);
+    const jobDataArg = JSON.stringify(convertNullToEmptyString(job.data));
     // const escapedJobDataArg = `'${jobDataArg.replace(/'/g, "'\\''")}'`;
 
     try {
