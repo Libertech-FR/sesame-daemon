@@ -8,7 +8,7 @@ export class DumpPackageConfigExecutor implements ExecutorInterface {
     return {
       status: 0,
       jobId: job.id,
-      data: [this.service.packageJson],
+      data: [/*this.service.packageJson*/],
     };
   }
 }
