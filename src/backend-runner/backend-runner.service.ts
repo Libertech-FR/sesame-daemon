@@ -10,12 +10,14 @@ import { ActionType } from './_enum/action-type.enum';
 import { ExecutorConfigInterface } from '~/_common/interfaces/executor-config.interface';
 import Redis from 'ioredis';
 import { DumpPackageConfigExecutor } from './_executors/dump-package-config.executor';
+import { PackageJson } from 'types-package-json';
+import { readFileSync } from 'node:fs';
 //import { PackageJson } from 'types-package-json';
 //import { readFileSync } from 'node:fs';
 
 @Injectable()
 export class BackendRunnerService implements OnApplicationBootstrap, OnModuleInit {
- // protected _package: Partial<PackageJson>;
+  protected _package: Partial<PackageJson>;
   private readonly _logger = new Logger(BackendRunnerService.name);
 
   protected executors: Map<string, ExecutorInterface> = new Map<string, ExecutorInterface>();
@@ -28,9 +30,9 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
     return this._logger;
   }
 
-  //public get packageJson(): Partial<PackageJson> {
-   // return this._package;
-  //}
+  public get packageJson(): Partial<PackageJson> {
+    return this._package;
+  }
 
   public get backendExecutorConfig(): ExecutorConfigInterface {
     return this._config.get<ExecutorConfigInterface>('application.backendExecutorConfig');
@@ -41,7 +43,13 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
     private readonly _backendsConfig: BackendConfigService,
     @InjectRedis() private readonly redis: Redis,
   ) {
-   // this._package = JSON.parse(readFileSync('package.json', 'utf-8'));
+    try {
+
+      this._package = JSON.parse(readFileSync('package.json', 'utf-8'));
+    } catch (e) {
+      this._logger.error('Error reading package.json file: ', e);
+      this._package = {};
+    }
   }
 
   public async onModuleInit() {
