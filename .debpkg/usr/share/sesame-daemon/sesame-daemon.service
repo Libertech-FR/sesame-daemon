@@ -5,7 +5,7 @@ Description=sesame-daemon
 EnvironmentFile=-/etc/default/sesame-daemon
 ExecStart=/usr/bin/sesame-daemon
 Restart=always
-User=nobody
+User=root
 # Note Debian/Ubuntu uses 'nogroup', RHEL/Fedora uses 'nobody'
 Group=nogroup
 WorkingDirectory=/var/lib/sesame-daemon
