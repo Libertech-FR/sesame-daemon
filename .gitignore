@@ -36,3 +36,6 @@ lerna-debug.log*
 
 # Docker
 docker-compose.yml
+sesame-daemon-win.exe
+sesame-daemon-linux
+sesame-daemon-macos
