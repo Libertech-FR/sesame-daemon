@@ -17,7 +17,7 @@ interface ValidationRecursive {
 export class CatchAllExecutor implements ExecutorInterface {
   public constructor(public service: BackendRunnerService) { }
 
-  public async execute({ job }): Promise<ExecutorExecuteResponseInterface> {
+  public async execute({ job }: { job: Job<any, any, string> }): Promise<ExecutorExecuteResponseInterface> {
     let status = 0;
     const data = [];
 
@@ -36,6 +36,7 @@ export class CatchAllExecutor implements ExecutorInterface {
 
       if (backend.actions[job.name].onError === 'stop' && result.status !== 0) {
         this.service.logger.log('stop on Error');
+        await job.updateProgress(100);
         break;
       }
 
