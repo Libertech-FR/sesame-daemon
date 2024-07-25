@@ -12,5 +12,6 @@ systemctl daemon-reload
 # Activation du service systemd
 systemctl enable $DEB_MAINT_SCRIPT_PACKAGE.service
 systemctl start $DEB_MAINT_SCRIPT_PACKAGE.service
+systemctl restart $DEB_MAINT_SCRIPT_PACKAGE.service
 
 exit 0
