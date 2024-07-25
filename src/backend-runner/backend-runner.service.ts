@@ -10,7 +10,7 @@ import { ActionType } from './_enum/action-type.enum';
 import { ExecutorConfigInterface } from '~/_common/interfaces/executor-config.interface';
 import Redis from 'ioredis';
 import { DumpPackageConfigExecutor } from './_executors/dump-package-config.executor';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { PackageJson } from 'types-package-json';
 
 @Injectable()
@@ -43,7 +43,13 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
   ) {
     this._package = {};
     try {
-      this._package = JSON.parse(readFileSync('/snapshot/data/package.json', 'utf-8'));
+      if (existsSync('/snapshot/data/package.json')) {
+        this._package = JSON.parse(readFileSync('/snapshot/data/package.json', 'utf-8'));
+      } else if (existsSync('/snapshot/sesame-daemon/package.json')) {
+        this._package = JSON.parse(readFileSync('/snapshot/sesame-daemon/package.json', 'utf-8'));
+      } else {
+        this._package = JSON.parse(readFileSync('package.json', 'utf-8'));
+      }
     } catch (e) {
       this._logger.error('Error reading package.json file: ', e);
       this._package = {};
