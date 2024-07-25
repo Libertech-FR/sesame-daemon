@@ -1,4 +1,4 @@
-FROM node:18-bookworm-slim as builder
+FROM node:18.18.0-buster-slim as builder
 
 ENV TIMEZONE=Europe/Paris \
   LANGUAGE=fr_FR.UTF-8 \
@@ -18,7 +18,7 @@ RUN yarn install \
 
 RUN yarn run build
 
-FROM node:18-bookworm-slim as production
+FROM node:18.18.0-buster-slim as production
 
 ENV TIMEZONE=Europe/Paris \
   LANGUAGE=fr_FR.UTF-8 \
@@ -36,7 +36,7 @@ ADD *.lock .
 
 RUN apt clean -y \
   && apt update -y \
-  && apt upgrade -y \
+  # && apt upgrade -y \
   && apt install -y locales \
   && export LANGUAGE=${LANGUAGE} \
   && export LANG=${LANG} \
@@ -58,6 +58,8 @@ RUN yarn install \
 # && yarn cache clean \
 # && yarn autoclean --init \
 # && yarn autoclean --force
+
+RUN npm i -g pkg
 
 COPY --from=builder /data/dist ./dist
 

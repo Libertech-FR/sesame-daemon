@@ -3,6 +3,7 @@ IMG_NAME = "ghcr.io/libertech-fr/sesame-deamon"
 BASE_NAME = "sesame"
 APP_NAME = "sesame-daemon"
 PLATFORM = "linux/amd64"
+PKG_TARGETS = "linux,macos,win"
 
 .DEFAULT_GOAL := help
 help:
@@ -43,6 +44,25 @@ exec: ## Run a shell in the container
 		--network dev \
 		-v $(CURDIR):/data \
 		$(IMG_NAME) sh
+
+pkg: ## Package the application
+	@rm sesame-daemon-* || true
+	@docker run -it --rm \
+		-e NODE_ENV=development \
+		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		--add-host host.docker.internal:host-gateway \
+		--platform $(PLATFORM) \
+		--network dev \
+		-v $(CURDIR):/data \
+		$(IMG_NAME) yarn build
+	@docker run -it --rm \
+		-e NODE_ENV=development \
+		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		--add-host host.docker.internal:host-gateway \
+		--platform $(PLATFORM) \
+		--network dev \
+		-v $(CURDIR):/data \
+		$(IMG_NAME) pkg dist/main.js -o sesame-daemon-macos --targets $(PKG_TARGETS) --config package.json
 
 dbs: ## Start databases
 	@docker volume create $(BASE_NAME)-mongodb
