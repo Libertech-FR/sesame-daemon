@@ -43,11 +43,13 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
   ) {
     this._package = {};
     try {
-      this._package = JSON.parse(readFileSync('package.json', 'utf-8'));
+      this._package = JSON.parse(readFileSync('/snapshot/data/package.json', 'utf-8'));
     } catch (e) {
       this._logger.error('Error reading package.json file: ', e);
       this._package = {};
     }
+    // console.log('pkg', (process as any).pkg)
+    // console.log('pkg', this._package)
   }
 
   public async onModuleInit() {

@@ -1,9 +1,9 @@
-include .env
 IMG_NAME = "ghcr.io/libertech-fr/sesame-deamon"
 BASE_NAME = "sesame"
 APP_NAME = "sesame-daemon"
 PLATFORM = "linux/amd64"
 PKG_TARGETS = "linux,macos,win"
+include .env
 
 .DEFAULT_GOAL := help
 help:
