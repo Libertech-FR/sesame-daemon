@@ -108,7 +108,7 @@ jobs:
 #      - run: node-prune
 
       - name: Build
-        run: pkg dist/main.js -o sesame-daemon --targets linux,macos,win -C Brotli --config package.json
+        run: pkg dist/main.js -o sesame-daemon-linux --targets linux --config package.json
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
