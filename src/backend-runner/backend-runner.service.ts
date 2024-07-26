@@ -44,10 +44,13 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
     this._package = {};
     try {
       if (existsSync('/snapshot/data/package.json')) {
+        // Build from local
         this._package = JSON.parse(readFileSync('/snapshot/data/package.json', 'utf-8'));
       } else if (existsSync('/snapshot/sesame-daemon/package.json')) {
+        // Build from github
         this._package = JSON.parse(readFileSync('/snapshot/sesame-daemon/package.json', 'utf-8'));
       } else {
+        // General case
         this._package = JSON.parse(readFileSync('package.json', 'utf-8'));
       }
     } catch (e) {
