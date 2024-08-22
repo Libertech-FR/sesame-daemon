@@ -93,7 +93,7 @@ dbs: ## Start databases
 		--health-start-period=5s \
 		--health-retries=3 \
 		--health-cmd="redis-cli ping || exit 1" \
-		redis || true
+		redis redis-server --appendonly yes || true
 	@docker exec -it $(BASE_NAME)-mongodb mongosh --eval "rs.initiate({_id: 'rs0', members: [{_id: 0, host: '127.0.0.1:27017'}]})" || true
 
 stop: ## Stop the container
