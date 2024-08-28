@@ -109,7 +109,7 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
         removeOnFail: {
           age: 60 * 60 * 24 * 7,
           count: 2_500,
-        },
+        }, //TODO: Add to config
       },
     );
 
