@@ -104,11 +104,11 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
         autorun: false,
         removeOnComplete: {
           age: 60 * 60 * 24 * 7,
-          count: 10_000,
+          count: 2_500,
         },
         removeOnFail: {
           age: 60 * 60 * 24 * 7,
-          count: 10_000,
+          count: 2_500,
         },
       },
     );
