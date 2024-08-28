@@ -2,7 +2,7 @@ import { spawn } from 'node:child_process';
 import { Job } from 'bullmq';
 import { ExecutorResponseInterface } from '../interfaces/executor-response.interface';
 import { ExecutorConfigInterface } from '../interfaces/executor-config.interface';
-import { join } from 'path';
+import { join, dirname } from 'path';
 
 function convertNullToEmptyString(obj) {
   if (obj === null) {
@@ -39,6 +39,7 @@ export async function executorTask(
       const child = spawn(join(command), {
         shell: options?.shell ?? true,
         stdio: 'pipe',
+        cwd: dirname(command)
       });
 
       child.stdin.write(jobDataArg);
