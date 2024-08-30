@@ -6,6 +6,10 @@ export interface ExecutorExecuteOptionsInterface {
 }
 
 export interface ExecutorExecuteResponseInterface {
+  jobName?: string;
+  options?: {
+    [key: string | number]: any;
+  };
   jobId: string;
   status: number;
   data: Array<any>;
