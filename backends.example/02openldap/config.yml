@@ -1,9 +1,0 @@
-_version: 1
-
-name: 'openldap'
-description: 'Backend for openldap'
-active: false
-actions:
-  IDENTITY_PASSWORD_CHANGE:
-    exec: "changepasswd"
-    onError: 'stop'

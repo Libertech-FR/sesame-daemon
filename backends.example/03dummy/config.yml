@@ -19,6 +19,12 @@ actions:
   IDENTITY_DELETE:
     script: 'dummy.sh'
     onError: 'stop'
+  IDENTITY_ENABLE:
+    script: 'dummy.sh'
+    onError: 'stop'
+  IDENTITY_DISABLE:
+    script: 'dummy.sh'
+    onError: 'stop'
   PING_TARGET:
     script: 'dummy.sh'
     onError: 'continue'
