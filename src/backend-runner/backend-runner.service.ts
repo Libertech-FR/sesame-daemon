@@ -69,7 +69,14 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
     this.redis.on('connecting', () => this.logger.verbose(`Redis connecting... 🟡`));
     this.redis.on('connect', () => this.logger.log(`Redis connected 🟢`));
     this.redis.on('ready', () => this.logger.debug(`Redis ready to listen jobs 🟣`));
-    this.redis.on('close', () => this.logger.fatal(`Redis connection closed 🟥`));
+    this.redis.on('close', () => {
+      this.logger.fatal(`Redis connection closed 🟥`);
+
+      if (process.env.NODE_ENV === 'production') {
+        this.logger.fatal(`Closing application...`);
+        process.exit(1);
+      }
+    });
 
     this.logger.log('OnModuleInit initialized 🔴');
   }
@@ -121,7 +128,11 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
     worker.on('error', (err) => this.logger.error(err));
     worker.on('closed', () => {
       this.logger.fatal(`Worker closed 🟥`);
-      process.exit(1);
+      
+      if (process.env.NODE_ENV === 'production') {
+        this.logger.fatal(`Closing application...`);
+        process.exit(1);
+      }
     });
 
     await worker.run();

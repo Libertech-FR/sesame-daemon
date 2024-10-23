@@ -17,7 +17,7 @@ export class BackendConfigService implements OnModuleInit {
     return this._backendsConfigData;
   }
 
-  public constructor(private readonly config: ConfigService) {}
+  public constructor(private readonly config: ConfigService) { }
 
   public async onModuleInit() {
     await this.initialize();
@@ -51,7 +51,7 @@ export class BackendConfigService implements OnModuleInit {
       }
     }
 
-    this.logger.verbose(backendsConfigData);
+    this.logger.verbose(JSON.stringify(backendsConfigData));
     this._backendsConfigData = backendsConfigData;
   }
 }

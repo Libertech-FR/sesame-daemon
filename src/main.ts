@@ -9,6 +9,7 @@ declare const module: any;
   const app = await NestFactory.createApplicationContext(AppModule, {
     logger: getLogLevel(cfg?.application?.logLevel),
   });
+  app.enableShutdownHooks();
   await app.init();
 
   if (module.hot) {
