@@ -110,7 +110,7 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
         return result;
       },
       {
-        connection: this.redis,
+        connection: this.redis.duplicate(),
         autorun: false,
         removeOnComplete: {
           age: 60 * 60 * 24 * 7,
