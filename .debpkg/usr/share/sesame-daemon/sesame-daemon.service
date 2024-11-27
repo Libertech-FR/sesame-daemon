@@ -1,10 +1,13 @@
 [Unit]
 Description=sesame-daemon
+StartLimitIntervalSec=400
+StartLimitBurst=0
 
 [Service]
 EnvironmentFile=-/etc/default/sesame-daemon
 ExecStart=/usr/bin/sesame-daemon
 Restart=always
+RestartSec=15s
 User=root
 # Note Debian/Ubuntu uses 'nogroup', RHEL/Fedora uses 'nobody'
 Group=nogroup
