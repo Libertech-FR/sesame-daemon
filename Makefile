@@ -43,7 +43,7 @@ exec: ## Run a shell in the container
 		--platform $(PLATFORM) \
 		--network dev \
 		-v $(CURDIR):/data \
-		$(IMG_NAME) sh
+		$(IMG_NAME) bash
 
 pkg: ## Package the application
 	@rm sesame-daemon-* || true
