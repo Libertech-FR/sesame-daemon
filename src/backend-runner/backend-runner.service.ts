@@ -128,7 +128,7 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
     worker.on('error', (err) => this.logger.error(err));
     worker.on('closed', () => {
       this.logger.fatal(`Worker closed 🟥`);
-      
+
       if (process.env.NODE_ENV === 'production') {
         this.logger.fatal(`Closing application...`);
         process.exit(1);
