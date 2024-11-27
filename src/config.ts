@@ -31,7 +31,8 @@ export default (): ConfigInstance => {
         showFriendlyErrorStack: true,
         maxRetriesPerRequest: null,
         enableOfflineQueue: false,
-        retryStrategy: (times) => Math.min(times * 1_000, 10_000),
+        // retryStrategy: (times) => Math.min(times * 1_000, 10_000),
+        retryStrategy: null,
       },
     },
   };
