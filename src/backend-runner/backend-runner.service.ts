@@ -72,7 +72,7 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
     this.redis.on('close', () => {
       this.logger.fatal(`Redis connection closed 🟥`);
 
-      if (process.env.NODE_ENV === 'production') {
+      if (process.env.NODE_ENV !== 'development') {
         this.logger.fatal(`Closing application...`);
         process.exit(1);
       }
