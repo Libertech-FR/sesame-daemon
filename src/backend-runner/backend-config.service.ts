@@ -31,9 +31,19 @@ export class BackendConfigService implements OnModuleInit {
     const files = crawler.crawl(this.config.get<string>('application.backendsPath')).sync().sort();
 
     for await (const file of files) {
+      if (!/config.yml$/.test(file)) {
+        this.logger.debug(`Skipping ${file}...`);
+        continue;
+      }
+
       this.logger.log(`Loading ${file}...`);
       const data = fs.readFileSync(file, 'utf8');
       const config = YAML.parse(data);
+
+      if (!config._version || !config.name) {
+        this.logger.debug(`Skipping with bad structure _version & name: ${file}...`);
+        continue;
+      }
 
       try {
         if (!config.path) config.path = path.dirname(file);
