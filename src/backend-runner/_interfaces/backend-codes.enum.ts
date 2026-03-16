@@ -7,12 +7,12 @@
  * @see https://www.gnu.org/software/libc/manual/html_node/Exit-Status.html
  */
 export enum BackendCodesEnumError {
-  GENERIC_ERROR = 1 << 0,
-  GENERIC_STOPPED = 1 << 1,
-  CONNECTION_ERROR = 1 << 2,
-  INVALID_LOGIN = 1 << 3,
-  INVALID_CREDENTIALS = 1 << 4,
-  INVALID_JSON_RESPONSE = 1 << 5,
+  GENERIC_ERROR = 1 << 0, // 1
+  GENERIC_STOPPED = 1 << 1, // 2
+  CONNECTION_ERROR = 1 << 2, // 4
+  INVALID_LOGIN = 1 << 3, // 8
+  INVALID_CREDENTIALS = 1 << 4, // 16
+  INVALID_JSON_RESPONSE = 1 << 5, // 32
 }
 
 export enum BackendCodesEnumSuccess {

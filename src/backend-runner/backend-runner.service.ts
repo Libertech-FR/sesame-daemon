@@ -1,7 +1,7 @@
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Injectable, Logger, OnApplicationBootstrap, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { UnrecoverableError, Worker } from 'bullmq';
+import { Worker } from 'bullmq';
 import { CatchAllExecutor } from './_executors/catch-all.executor';
 import { ListBackendsExecutor } from './_executors/list-backends.executor';
 import { ExecutorExecuteResponseInterface, ExecutorInterface } from './executors.interface';

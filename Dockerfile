@@ -48,7 +48,8 @@ RUN apt clean -y \
   git \
   jq \
   nano \
-  openssl
+  openssl \
+  python3
 
 RUN yarn install \
   --prefer-offline \
