@@ -49,7 +49,9 @@ RUN apt clean -y \
   jq \
   nano \
   openssl \
-  python3
+  python3 \
+  python3-paramiko \
+  python3-jinja2
 
 RUN yarn install \
   --prefer-offline \
