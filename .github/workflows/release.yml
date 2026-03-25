@@ -144,6 +144,46 @@ jobs:
           arch: 'amd64'
           desc: 'Sesame Daemon'
 
+      - name: Init rpm package
+        run: |
+          rm -rf .rpmpkg
+          mkdir -p .rpmpkg/usr/bin
+          cp sesame-daemon-linux .rpmpkg/usr/bin/sesame-daemon
+          chmod +x .rpmpkg/usr/bin/sesame-daemon
+
+          mkdir -p .rpmpkg/var/lib/sesame-daemon/backends
+          cp -r ./backends.example .rpmpkg/var/lib/sesame-daemon
+
+          mkdir -p .rpmpkg/usr/share/sesame-daemon
+          cp .debpkg/usr/share/sesame-daemon/sesame-daemon.service .rpmpkg/usr/share/sesame-daemon/sesame-daemon.service
+
+          mkdir -p .rpmpkg/etc/default
+          cp .debpkg/etc/default/sesame-daemon .rpmpkg/etc/default/sesame-daemon
+
+      - name: Create rpm package
+        uses: jiro4989/build-rpm-action@v2
+        with:
+          summary: 'Sesame Daemon'
+          package: sesame-daemon
+          package_root: .rpmpkg
+          maintainer: Libertech-FR
+          version: ${{ env.PACKAGE_VERSION }} # ${{ github.ref }} # refs/tags/v*.*.*
+          arch: 'amd64'
+          desc: 'Sesame Daemon'
+          post: |
+            #!/bin/sh
+            set -e
+
+            DEB_MAINT_SCRIPT_PACKAGE=sesame-daemon
+            SERVICE_FILE=/lib/systemd/system/$DEB_MAINT_SCRIPT_PACKAGE.service
+
+            cp /usr/share/$DEB_MAINT_SCRIPT_PACKAGE/$DEB_MAINT_SCRIPT_PACKAGE.service $SERVICE_FILE
+            systemctl daemon-reload
+
+            systemctl enable $DEB_MAINT_SCRIPT_PACKAGE.service
+            systemctl start $DEB_MAINT_SCRIPT_PACKAGE.service
+            systemctl restart $DEB_MAINT_SCRIPT_PACKAGE.service
+
       - name: Release
         uses: svenstaro/upload-release-action@v2
         with:
