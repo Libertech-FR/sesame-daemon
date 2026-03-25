@@ -168,7 +168,7 @@ jobs:
           package_root: .rpmpkg
           maintainer: Libertech-FR
           version: ${{ env.PACKAGE_VERSION }} # ${{ github.ref }} # refs/tags/v*.*.*
-          arch: 'amd64'
+          arch: 'x86_64'
           desc: 'Sesame Daemon'
           post: |
             #!/bin/sh
