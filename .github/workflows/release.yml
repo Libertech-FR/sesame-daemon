@@ -111,13 +111,13 @@ jobs:
         run: pkg dist/main.js -o sesame-daemon-linux --targets linux --config package.json
 
       - name: Upload Build Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sesame-daemon-linux
           path: sesame-daemon-linux
 
       - name: Download a Build Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: sesame-daemon-linux
 
