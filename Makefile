@@ -119,3 +119,4 @@ stop-all: ## Stop all containers
 	@docker stop $(APP_NAME) || true
 	@docker stop $(BASE_NAME)-mongodb || true
 	@docker stop $(BASE_NAME)-redis || true
+	@docker stop $(BASE_NAME)-openldap || true
