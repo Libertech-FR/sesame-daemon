@@ -1,0 +1,19 @@
+dn: ou=peoples,dc=sesame,dc=local
+objectClass: top
+objectClass: organizationalUnit
+ou: peoples
+
+dn: ou=Etudiants,ou=peoples,dc=sesame,dc=local
+objectClass: top
+objectClass: organizationalUnit
+ou: Etudiants
+
+dn: ou=Administratifs,ou=peoples,dc=sesame,dc=local
+objectClass: top
+objectClass: organizationalUnit
+ou: Administratifs
+
+dn: ou=Enseignants,ou=peoples,dc=sesame,dc=local
+objectClass: top
+objectClass: organizationalUnit
+ou: Enseignants

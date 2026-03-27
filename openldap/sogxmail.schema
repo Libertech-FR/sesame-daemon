@@ -1,0 +1,39 @@
+#
+# Minimal sogxmail schema for dev OpenLDAP
+#
+
+attributetype ( 1.3.6.1.4.1.7383.20.1
+  NAME 'sogxdisableflag'
+  DESC 'Account disable flag'
+  EQUALITY caseIgnoreIA5Match
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.26
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.7383.20.2
+  NAME 'proxyaddress'
+  DESC 'Emulate AD proxyaddress'
+  EQUALITY caseIgnoreIA5Match
+  SUBSTR caseIgnoreIA5SubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+attributetype ( 1.3.6.1.4.1.7383.20.3
+  NAME 'sogxHomeServer'
+  DESC 'Server which keeps the users mailbox'
+  EQUALITY caseIgnoreIA5Match
+  SUBSTR caseIgnoreIA5SubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+attributetype ( 1.3.6.1.4.1.7383.20.4
+  NAME 'sogxquota'
+  DESC 'Mailbox quota'
+  EQUALITY caseIgnoreIA5Match
+  SUBSTR caseIgnoreIA5SubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+objectclass ( 1.3.6.1.4.1.7383.21.1
+  NAME 'sogxUser'
+  DESC 'SogxUser'
+  SUP top
+  AUXILIARY
+  MAY ( sogxquota $ proxyaddress $ sogxHomeServer $ sogxdisableflag ) )
+
