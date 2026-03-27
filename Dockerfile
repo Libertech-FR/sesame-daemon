@@ -51,7 +51,8 @@ RUN apt clean -y \
   openssl \
   python3 \
   python3-paramiko \
-  python3-jinja2
+  python3-jinja2 \
+  python3-ldap
 
 RUN yarn install \
   --prefer-offline \
