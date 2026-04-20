@@ -102,6 +102,8 @@ jobs:
           node-version: '18'
       - run: npm install -g yarn
       - run: yarn --frozen-lockfile
+      - name: Unit tests
+        run: make test
       - run: npm install --global pkg
       - run: yarn build
 #      - run: curl -sf https://gobinaries.com/tj/node-prune | sh

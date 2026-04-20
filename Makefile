@@ -10,7 +10,7 @@ SESAME_LDAPPASSWORD?=sesame
 include .env
 
 .DEFAULT_GOAL := help
-.PHONY: help build dev install exec pkg dbs openldap stop stop-all
+.PHONY: help build dev install test exec pkg dbs openldap stop stop-all
 help:
 	@printf "\033[33mUsage:\033[0m\n  make [target] [arg=\"val\"...]\n\n\033[33mTargets:\033[0m\n"
 	@grep -h -E '^[-a-zA-Z0-9_\.\/]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -39,6 +39,16 @@ install: ## Install dependencies
 		--network dev \
 		-v $(CURDIR):/data \
 		$(IMG_NAME) yarn install
+
+test: ## Run unit tests
+	@docker run --rm \
+		-e NODE_ENV=test \
+		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		--add-host host.docker.internal:host-gateway \
+		--platform $(PLATFORM) \
+		--network dev \
+		-v $(CURDIR):/data \
+		$(IMG_NAME) yarn test --runInBand
 
 exec: ## Run a shell in the container
 	@docker run -it --rm \
