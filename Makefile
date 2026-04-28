@@ -41,14 +41,18 @@ install: ## Install dependencies
 		$(IMG_NAME) yarn install
 
 test: ## Run unit tests
-	@docker run --rm \
-		-e NODE_ENV=test \
-		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
-		--add-host host.docker.internal:host-gateway \
-		--platform $(PLATFORM) \
-		--network dev \
-		-v $(CURDIR):/data \
-		$(IMG_NAME) yarn test --runInBand
+	@if docker image inspect $(IMG_NAME) >/dev/null 2>&1; then \
+		docker run --rm \
+			-e NODE_ENV=test \
+			-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+			--add-host host.docker.internal:host-gateway \
+			--platform $(PLATFORM) \
+			--network dev \
+			-v $(CURDIR):/data \
+			$(IMG_NAME) yarn test --runInBand; \
+	else \
+		yarn test --runInBand; \
+	fi
 
 exec: ## Run a shell in the container
 	@docker run -it --rm \
