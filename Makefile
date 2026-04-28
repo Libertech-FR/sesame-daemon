@@ -7,7 +7,7 @@ SESAME_OPENLDAP_PORT?=389
 SESAME_LDAPORGANISATION?=Sesame
 SESAME_LDAPDOMAIN?=sesame.local
 SESAME_LDAPPASSWORD?=sesame
-include .env
+-include .env
 
 .DEFAULT_GOAL := help
 .PHONY: help build dev install test exec pkg dbs openldap stop stop-all
