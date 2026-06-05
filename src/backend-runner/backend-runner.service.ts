@@ -44,21 +44,16 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
     this._package = {};
     try {
       if (existsSync('/snapshot/data/package.json')) {
-        // Build from local
         this._package = JSON.parse(readFileSync('/snapshot/data/package.json', 'utf-8'));
       } else if (existsSync('/snapshot/sesame-daemon/package.json')) {
-        // Build from github
         this._package = JSON.parse(readFileSync('/snapshot/sesame-daemon/package.json', 'utf-8'));
       } else {
-        // General case
         this._package = JSON.parse(readFileSync('package.json', 'utf-8'));
       }
     } catch (e) {
       this._logger.error('Error reading package.json file: ', e);
       this._package = {};
     }
-    // console.log('pkg', (process as any).pkg)
-    // console.log('pkg', this._package)
   }
 
   public async onModuleInit() {
@@ -96,11 +91,10 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
         this.logger.verbose(`Job ${job.name} executed with status ${result.status}`);
 
         if (result.status !== 0) {
-          const errMsg = []
           this.logger.error(`Job ${job.name} failed with status ${result.status}`);
 
           for (const data of result.data) {
-            errMsg.push(data?.error?.message || 'No error message');
+            this.logger.error(data?.error?.message || 'No error message');
           }
 
           return result;
@@ -112,6 +106,7 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
       {
         connection: this.redis.duplicate(),
         autorun: false,
+        concurrency: 5,
         removeOnComplete: {
           age: 60 * 60 * 24 * 7,
           count: 2_500,
@@ -119,7 +114,7 @@ export class BackendRunnerService implements OnApplicationBootstrap, OnModuleIni
         removeOnFail: {
           age: 60 * 60 * 24 * 7,
           count: 2_500,
-        }, //TODO: Add to config
+        },
       },
     );
 
