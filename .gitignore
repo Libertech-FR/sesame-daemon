@@ -1,22 +1,30 @@
-# compiled output
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Build output
+/build
 /dist
-/node_modules
+/distribs
+*.spec
+sesame-daemon-linux
+sesame-daemon-macos
+sesame-daemon-win.exe
+
 .env
+
 # Logs
 logs
 *.log
-npm-debug.log*
-pnpm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
 
 # OS
 .DS_Store
-
-# Tests
-/coverage
-/.nyc_output
 
 # IDEs and editors
 /.idea
@@ -36,6 +44,3 @@ lerna-debug.log*
 
 # Docker
 docker-compose.yml
-sesame-daemon-win.exe
-sesame-daemon-linux
-sesame-daemon-macos

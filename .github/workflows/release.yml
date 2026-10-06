@@ -62,10 +62,19 @@ jobs:
           echo ${{ secrets.GITHUB_TOKEN }} > token.txt
           git config credential.helper "store --file=token.txt"
 
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: '3.12'
+
       - name: Update version
         shell: bash
         run: |
-          echo NEW_VERSION=$(yarn version --${{ inputs.version_increment }} --json | jq -r '.data | select(contains("New version")) | split(":")[1] | gsub(" ";"")') >> $GITHUB_ENV
+          uv version --bump ${{ inputs.version_increment }}
+          NEW_VERSION=$(uv version --short)
+          git commit -am "v${NEW_VERSION}"
+          git tag -a "v${NEW_VERSION}" -m "v${NEW_VERSION}"
+          echo NEW_VERSION=${NEW_VERSION} >> $GITHUB_ENV
         env:
           REF: ${{ github.ref }}
 
@@ -96,21 +105,14 @@ jobs:
           makeLatest: ${{ inputs.latest }}
           tag: ${{ env.NEW_VERSION }}
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-      - run: npm install -g yarn
-      - run: yarn --frozen-lockfile
       - name: Unit tests
-        run: make test
-      - run: npm install --global pkg
-      - run: yarn build
-#      - run: curl -sf https://gobinaries.com/tj/node-prune | sh
-#      - run: node-prune
+        run: |
+          uv sync --frozen
+          uv run pytest
 
+      # Construit sur bullseye (glibc 2.31) pour que le binaire tourne sur Debian 11/12 et RHEL/Rocky 9
       - name: Build
-        run: pkg dist/main.js -o sesame-daemon-linux --targets linux --config package.json
+        run: make pkg
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
@@ -134,7 +136,7 @@ jobs:
 
       - name: Set Package Version
         run: |
-          echo "PACKAGE_VERSION=$(cat package.json | jq .version -r)" >> $GITHUB_ENV
+          echo "PACKAGE_VERSION=$(uv version --short)" >> $GITHUB_ENV
 
       - name: Create deb package
         uses: jiro4989/build-deb-action@v3

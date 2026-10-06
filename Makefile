@@ -2,7 +2,6 @@ IMG_NAME = "ghcr.io/libertech-fr/sesame-deamon"
 BASE_NAME = "sesame"
 APP_NAME = "sesame-daemon"
 PLATFORM = "linux/amd64"
-PKG_TARGETS = "linux,macos,win"
 SESAME_OPENLDAP_PORT?=389
 SESAME_LDAPORGANISATION?=Sesame
 SESAME_LDAPDOMAIN?=sesame.local
@@ -21,67 +20,55 @@ build: ## Build the container
 
 dev: ## Start development environment
 	@docker run --rm -it \
-		-e NODE_ENV=development \
-		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		-e SESAME_ENV=development \
 		--add-host host.docker.internal:host-gateway \
 		--network dev \
 		--platform $(PLATFORM) \
 		--name $(APP_NAME) \
 		-v $(CURDIR):/data \
-		$(IMG_NAME) yarn start:dev
+		$(IMG_NAME) uv run watchfiles --filter python 'python -m sesame_daemon' src
 
 install: ## Install dependencies
 	@docker run -it --rm \
-		-e NODE_ENV=development \
-		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		-e SESAME_ENV=development \
 		--add-host host.docker.internal:host-gateway \
 		--platform $(PLATFORM) \
 		--network dev \
 		-v $(CURDIR):/data \
-		$(IMG_NAME) yarn install
+		$(IMG_NAME) uv sync --frozen
 
 test: ## Run unit tests
 	@if docker image inspect $(IMG_NAME) >/dev/null 2>&1; then \
 		docker run --rm \
-			-e NODE_ENV=test \
-			-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+			-e SESAME_ENV=test \
 			--add-host host.docker.internal:host-gateway \
 			--platform $(PLATFORM) \
 			--network dev \
 			-v $(CURDIR):/data \
-			$(IMG_NAME) yarn test --runInBand; \
+			$(IMG_NAME) uv run pytest; \
 	else \
-		yarn test --runInBand; \
+		uv run pytest; \
 	fi
 
 exec: ## Run a shell in the container
 	@docker run -it --rm \
-		-e NODE_ENV=development \
-		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		-e SESAME_ENV=development \
 		--add-host host.docker.internal:host-gateway \
 		--platform $(PLATFORM) \
 		--network dev \
 		-v $(CURDIR):/data \
 		$(IMG_NAME) bash
 
-pkg: ## Package the application
-	@rm sesame-daemon-* || true
-	@docker run -it --rm \
-		-e NODE_ENV=development \
-		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
-		--add-host host.docker.internal:host-gateway \
+pkg: ## Build the standalone linux binary (sesame-daemon-linux)
+	@rm -f sesame-daemon-linux
+	@docker run --rm \
 		--platform $(PLATFORM) \
-		--network dev \
-		-v $(CURDIR):/data \
-		$(IMG_NAME) yarn build
-	@docker run -it --rm \
-		-e NODE_ENV=development \
-		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
-		--add-host host.docker.internal:host-gateway \
-		--platform $(PLATFORM) \
-		--network dev \
-		-v $(CURDIR):/data \
-		$(IMG_NAME) pkg dist/main.js -o sesame-daemon-macos --targets $(PKG_TARGETS) --config package.json
+		-v $(CURDIR):/repo:ro \
+		-v $(CURDIR):/output \
+		python:3.12-slim-bullseye bash -c "\
+			apt-get update -qq && apt-get install -yqq --no-install-recommends binutils >/dev/null && \
+			pip install -q uv && cp -r /repo /src && rm -rf /src/.venv && cd /src && \
+			UV_PROJECT_ENVIRONMENT=/tmp/venv scripts/build-binary.sh sesame-daemon-linux /output"
 
 dbs: ## Start databases
 	@docker volume create $(BASE_NAME)-mongodb

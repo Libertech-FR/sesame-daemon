@@ -1,5 +1,11 @@
-node_modules/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+build/
 dist/
 distribs/
-
+sesame-daemon-linux
+sesame-daemon-macos
 .env

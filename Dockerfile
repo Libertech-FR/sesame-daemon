@@ -1,49 +1,32 @@
-FROM node:22-bookworm-slim AS builder
+FROM python:3.12-slim-bookworm
+
+COPY --from=ghcr.io/astral-sh/uv:0.5 /uv /uvx /bin/
 
 ENV TIMEZONE=Europe/Paris \
   LANGUAGE=fr_FR.UTF-8 \
   LANG=fr_FR.UTF-8 \
   TERM=xterm \
-  DEBIAN_FRONTEND=noninteractive
+  DEBIAN_FRONTEND=noninteractive \
+  PYTHONUNBUFFERED=1 \
+  UV_COMPILE_BYTECODE=1 \
+  UV_LINK_MODE=copy \
+  # Hors de /data pour que le montage du code en dev ne masque pas l'environnement
+  UV_PROJECT_ENVIRONMENT=/opt/venv \
+  PATH=/opt/venv/bin:$PATH
+
+ARG SESAME_ENV=production
+ENV SESAME_ENV=${SESAME_ENV}
 
 WORKDIR /data
-
-COPY . .
-
-RUN yarn install \
-  --prefer-offline \
-  --frozen-lockfile \
-  --non-interactive \
-  --production=false
-
-RUN yarn run build
-
-FROM node:22-bookworm-slim AS production
-
-ENV TIMEZONE=Europe/Paris \
-  LANGUAGE=fr_FR.UTF-8 \
-  LANG=fr_FR.UTF-8 \
-  TERM=xterm \
-  DEBIAN_FRONTEND=noninteractive
-
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
-
-WORKDIR /data
-
-ADD package.json .
-ADD *.lock .
 
 RUN apt clean -y \
   && apt update -y \
-  # && apt upgrade -y \
   && apt install -y locales \
-  && export LANGUAGE=${LANGUAGE} \
-  && export LANG=${LANG} \
-  && export LC_ALL=${LC_ALL} \
+  && sed -i "/${LANG}/s/^# //" /etc/locale.gen \
   && locale-gen ${LANG} \
   && dpkg-reconfigure --frontend ${DEBIAN_FRONTEND} locales \
   && apt install --no-install-recommends -yq \
+  binutils \
   procps \
   git \
   jq \
@@ -52,19 +35,13 @@ RUN apt clean -y \
   python3 \
   python3-paramiko \
   python3-jinja2 \
-  python3-ldap
+  python3-ldap \
+  && rm -rf /var/lib/apt/lists/*
 
-RUN yarn install \
-  --prefer-offline \
-  --pure-lockfile \
-  --non-interactive \
-  --production=true
-# && yarn cache clean \
-# && yarn autoclean --init \
-# && yarn autoclean --force
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-install-project
 
-RUN npm i -g pkg
+COPY . .
+RUN uv sync --frozen
 
-COPY --from=builder /data/dist ./dist
-
-CMD ["yarn", "run", "start:prod"]
+CMD ["sesame-daemon"]

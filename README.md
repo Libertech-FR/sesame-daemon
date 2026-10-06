@@ -10,7 +10,7 @@ Le **Sesame daemon** est le worker d’exécution de Sésame. Il se connecte à 
 
 ## Architecture (vue rapide)
 
-- **Daemon**: application NestJS lancée en *application context* (pas d’API HTTP), qui démarre un `Worker` BullMQ.
+- **Daemon**: application Python (asyncio, pas d’API HTTP) qui démarre un `Worker` BullMQ (client [`bullmq`](https://pypi.org/project/bullmq/) Python, compatible avec les queues de l’orchestrateur Node).
 - **Redis**: broker BullMQ (obligatoire).
 - **Backends**: dossiers contenant un `config.yml` décrivant le backend + les exécutables associés.
 
@@ -18,19 +18,20 @@ Ressource: [Figma](https://www.figma.com/file/OplQ0tHFHS5rFz5K6OCgEd/Sesame?type
 
 ## Prérequis
 
-- **Node.js** (CI en Node 18)
-- **Yarn** (le repo est en Yarn v1)
+- **Python 3.11+** (CI et binaire en Python 3.12)
+- **[uv](https://docs.astral.sh/uv/)** pour gérer les dépendances
 - **Redis** accessible depuis le daemon
 
 ## Configuration (variables d’environnement)
 
-Les variables effectivement utilisées par le daemon sont dans `src/config.ts`.
+Les variables effectivement utilisées par le daemon sont dans `src/sesame_daemon/config.py`. Un fichier `.env` dans le répertoire courant est chargé au démarrage (sans écraser les variables déjà définies).
 
 - **`SESAME_REDIS_URI`**: URI Redis (défaut `redis://localhost:6379/0`)
 - **`SESAME_NAME_QUEUE`**: nom de la queue BullMQ (défaut `sesame`)
-- **`SESAME_BACKENDS_PATH`**: chemin vers le répertoire des backends (défaut `./backends` à côté du code)
-- **`SESAME_LOG_LEVEL`**: niveau de logs (défaut `info`)
-- **`SESAME_BACKENDS_EXECUTOR_SHELL`**: configuration “shell” d’exécution (défaut: `true`)
+- **`SESAME_BACKENDS_PATH`**: chemin vers le répertoire des backends (défaut `./backends`, relatif au répertoire courant)
+- **`SESAME_LOG_LEVEL`**: niveau de logs `fatal|error|warn|info|debug|verbose` (défaut `info`, insensible à la casse)
+- **`SESAME_BACKENDS_EXECUTOR_SHELL`**: exécution des scripts via un shell (défaut `true` = `/bin/sh`, `false` = exécution directe, ou chemin d’un shell, ex. `/bin/bash`)
+- **`SESAME_ENV`**: `development` empêche l’arrêt du daemon quand Redis devient injoignable (`NODE_ENV` est encore accepté)
 
 Exemple minimal (copie de `.env.example`) :
 
@@ -66,14 +67,16 @@ Puis ajoutez vos backends dans `./backends` (ou pointez `SESAME_BACKENDS_PATH` a
 1) Installer:
 
 ```bash
-yarn install
+uv sync
 ```
 
 2) Démarrer Redis (ex: en local sur `6379`) puis lancer le daemon:
 
 ```bash
 export SESAME_REDIS_URI="redis://localhost:6379/0"
-yarn start:dev
+uv run sesame-daemon
+# ou, avec rechargement automatique :
+uv run watchfiles --filter python 'python -m sesame_daemon' src
 ```
 
 ## Environnement de dev via Docker (Makefile)
@@ -107,12 +110,28 @@ make dev
 ## Tests
 
 ```bash
-yarn test
+uv run pytest
+uv run ruff check
+```
+
+Les tests d’installation des paquets `.deb` / `.rpm` dans Docker sont désactivés par défaut :
+
+```bash
+RUN_DOCKER_DEB_INSTALL_START_TEST=1 uv run pytest tests/docker/test_deb_install_start.py
+RUN_DOCKER_RPM_INSTALL_START_TEST=1 uv run pytest tests/docker/test_rpm_install_start.py
 ```
 
 ## Build / packaging
 
-Le workflow de release génère un binaire via `pkg` (ex: `sesame-daemon-linux`) et des paquets `.deb` / `.rpm`.
+Le workflow de release génère un binaire autonome via [PyInstaller](https://pyinstaller.org) (`sesame-daemon-linux`) et des paquets `.deb` / `.rpm`.
+
+Le binaire est construit dans une image `python:3.12-slim-bullseye` (glibc 2.31) pour fonctionner sur Debian 11/12 et RHEL/Rocky 9 :
+
+```bash
+make pkg   # produit ./sesame-daemon-linux
+```
+
+Hors Docker, `scripts/build-binary.sh [nom] [dossier]` construit le binaire pour la plateforme courante.
 
 - **Release GitHub (binaire + paquets)**: déclencher le workflow “Release” via GitHub Actions:
   - `https://github.com/Libertech-Fr/sesame-daemon/actions/workflows/release.yml?event=workflow_dispatch`

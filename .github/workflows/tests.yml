@@ -12,17 +12,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
         with:
-          node-version: '18'
-
-      - name: Install Yarn
-        run: npm install -g yarn
+          python-version: '3.12'
 
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: uv sync --frozen
+
+      - name: Lint
+        run: uv run ruff check
 
       - name: Run unit tests
-        run: yarn test
-
+        run: uv run pytest
