@@ -1,5 +1,5 @@
-import { IsEnum, IsObject, IsOptional, IsString } from 'class-validator';
-import { BackendCodesEnumError, BackendCodesEnumSuccess } from '../_interfaces/backend-codes.enum';
+import { IsEnum, IsInt, IsObject, IsOptional, IsString, Min } from 'class-validator';
+import { BackendCodesEnumSuccess } from '../_interfaces/backend-codes.enum';
 
 export class BackendResultInfoDto {
   @IsString()
@@ -17,6 +17,8 @@ export class BackendResultInfoSuccessDto extends BackendResultInfoDto {
 }
 
 export class BackendResultInfoErrorDto extends BackendResultInfoDto {
-  @IsEnum(BackendCodesEnumError)
+  // Tout code > 0 est une erreur (codes BackendCodesEnumError, combinaisons de flags ou codes spécifiques au backend)
+  @IsInt()
+  @Min(1)
   public status: number;
 }

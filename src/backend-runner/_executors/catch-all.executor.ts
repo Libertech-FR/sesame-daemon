@@ -69,8 +69,22 @@ export class CatchAllExecutor implements ExecutorInterface {
         };
       }
 
-      this.service.logger.log(`Backend ${backend.name} executed successfully`);
       const output = this.extractLastJsonImproved(process.output);
+
+      // Exit code 0 mais le backend signale une erreur via le status JSON
+      if (typeof output?.status === 'number' && output.status > 0) {
+        this.service.logger.error(`Backend ${backend.name} returned error status ${output.status}`);
+        const errorSchema = plainToInstance(BackendResultInfoErrorDto, output);
+        await validateOrReject(errorSchema);
+
+        return {
+          backend: backend.name,
+          status: output.status,
+          error: output,
+        };
+      }
+
+      this.service.logger.log(`Backend ${backend.name} executed successfully`);
       const outputSchema = plainToInstance(BackendResultInfoSuccessDto, output);
       await validateOrReject(outputSchema);
 
