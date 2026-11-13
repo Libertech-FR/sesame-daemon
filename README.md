@@ -121,7 +121,7 @@ Le workflow de release génère un binaire via `pkg` (ex: `sesame-daemon-linux`)
 
 Les paquets installent un service systemd `sesame-daemon` qui exécute `/usr/bin/sesame-daemon` avec:
 - `WorkingDirectory=/var/lib/sesame-daemon`
-- un fichier d’environnement optionnel: `/etc/default/sesame-daemon`
+- un fichier d’environnement optionnel: `/etc/default/sesame-daemon` (créé à l’installation à partir de `/usr/share/sesame-daemon/sesame-daemon.default` s’il n’existe pas ; conservé lors des mises à jour des paquets `.deb` et `.rpm`)
 
 Exemple de variables (fichier `/etc/default/sesame-daemon`) :
 

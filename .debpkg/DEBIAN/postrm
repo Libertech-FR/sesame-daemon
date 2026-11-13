@@ -11,4 +11,8 @@ if [ "$1" = "remove" ]; then
     systemctl daemon-reload
 fi
 
+if [ "$1" = "purge" ]; then
+    rm -f /etc/default/sesame-daemon /etc/default/sesame-daemon.dpkg-keep
+fi
+
 exit 0

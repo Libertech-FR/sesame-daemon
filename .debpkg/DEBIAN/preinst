@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+
+# Sauvegarde du fichier de configuration existant.
+# Les anciennes versions du paquet livraient /etc/default/sesame-daemon directement :
+# dpkg le supprimerait/écraserait lors de la mise à jour. On le met de côté pour que
+# postinst puisse le restaurer.
+CONF_FILE=/etc/default/sesame-daemon
+BACKUP_FILE=$CONF_FILE.dpkg-keep
+
+case "$1" in
+    install|upgrade)
+        if [ -f "$CONF_FILE" ]; then
+            cp -p "$CONF_FILE" "$BACKUP_FILE"
+        fi
+        ;;
+esac
+
+exit 0

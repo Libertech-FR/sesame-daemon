@@ -1,9 +1,22 @@
 #!/bin/sh
 set -e
 
-# Installation du fichier de service
 DEB_MAINT_SCRIPT_PACKAGE=sesame-daemon
 SERVICE_FILE=/lib/systemd/system/$DEB_MAINT_SCRIPT_PACKAGE.service
+CONF_FILE=/etc/default/$DEB_MAINT_SCRIPT_PACKAGE
+BACKUP_FILE=$CONF_FILE.dpkg-keep
+DEFAULT_CONF=/usr/share/$DEB_MAINT_SCRIPT_PACKAGE/$DEB_MAINT_SCRIPT_PACKAGE.default
+
+# Fichier de configuration : on conserve l'existant, sinon on installe celui par défaut
+if [ ! -f "$CONF_FILE" ] && [ -f "$BACKUP_FILE" ]; then
+    mv "$BACKUP_FILE" "$CONF_FILE"
+elif [ ! -f "$CONF_FILE" ]; then
+    mkdir -p /etc/default
+    cp "$DEFAULT_CONF" "$CONF_FILE"
+fi
+rm -f "$BACKUP_FILE"
+
+# Installation du fichier de service
 cp /usr/share/$DEB_MAINT_SCRIPT_PACKAGE/$DEB_MAINT_SCRIPT_PACKAGE.service $SERVICE_FILE
 
 # Rechargement du démon systemd pour prendre en compte le nouveau fichier de service

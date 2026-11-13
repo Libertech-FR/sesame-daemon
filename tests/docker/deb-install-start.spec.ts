@@ -107,7 +107,7 @@ describe('Docker Debian DEB smoke', () => {
       );
       fs.mkdirSync(path.join(debRoot, 'etc/default'), { recursive: true });
       fs.copyFileSync(
-        path.join(repoRoot, '.debpkg/etc/default/sesame-daemon'),
+        path.join(repoRoot, '.debpkg/usr/share/sesame-daemon/sesame-daemon.default'),
         path.join(debRoot, 'etc/default/sesame-daemon'),
       );
 

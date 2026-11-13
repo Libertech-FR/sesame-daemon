@@ -117,17 +117,29 @@ describe('Docker Rocky RPM smoke', () => {
         );
       }
 
-      fs.mkdirSync(path.join(rpmpkgRoot, 'etc/default'), { recursive: true });
+      // /etc/default/sesame-daemon is created by the scriptlets (see release.yml), not shipped.
       fs.copyFileSync(
-        path.join(repoRoot, '.debpkg/etc/default/sesame-daemon'),
-        path.join(rpmpkgRoot, 'etc/default/sesame-daemon'),
+        path.join(repoRoot, '.debpkg/usr/share/sesame-daemon/sesame-daemon.default'),
+        path.join(rpmpkgRoot, 'usr/share/sesame-daemon/sesame-daemon.default'),
       );
 
       // Build the RPM using the same Docker action image as in .github/workflows/release.yml.
       // We inject a minimal %post that only copies the systemd unit file into place.
       // systemctl enable/start will be done after we start systemd + redis inside Rocky.
-      const postScript =
-        'mkdir -p /lib/systemd/system; cp /usr/share/sesame-daemon/sesame-daemon.service /lib/systemd/system/sesame-daemon.service;';
+      // The default-config handling (%post / %pre / %posttrans) mirrors release.yml.
+      const postScript = [
+        'mkdir -p /lib/systemd/system; cp /usr/share/sesame-daemon/sesame-daemon.service /lib/systemd/system/sesame-daemon.service;',
+        'if [ ! -f /etc/default/sesame-daemon ]; then mkdir -p /etc/default; cp /usr/share/sesame-daemon/sesame-daemon.default /etc/default/sesame-daemon; fi',
+        '',
+        '%pre',
+        'if [ -f /etc/default/sesame-daemon ]; then cp -p /etc/default/sesame-daemon /etc/default/sesame-daemon.rpm-keep; fi',
+        '',
+        '%posttrans',
+        'CONF_FILE=/etc/default/sesame-daemon',
+        'if [ ! -f "$CONF_FILE" ] && [ -f "$CONF_FILE.rpm-keep" ]; then mv "$CONF_FILE.rpm-keep" "$CONF_FILE";',
+        'elif [ ! -f "$CONF_FILE" ]; then mkdir -p /etc/default; cp /usr/share/sesame-daemon/sesame-daemon.default "$CONF_FILE"; fi',
+        'rm -f "$CONF_FILE.rpm-keep"',
+      ].join('\n');
 
       run(
         [

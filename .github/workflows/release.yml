@@ -131,6 +131,7 @@ jobs:
           cp -r ./backends.example .debpkg/var/lib/sesame-daemon
           chmod +x .debpkg/DEBIAN/postinst
           chmod +x .debpkg/DEBIAN/postrm
+          chmod +x .debpkg/DEBIAN/preinst
 
       - name: Set Package Version
         run: |
@@ -159,8 +160,9 @@ jobs:
           mkdir -p .rpmpkg/usr/share/sesame-daemon
           cp .debpkg/usr/share/sesame-daemon/sesame-daemon.service .rpmpkg/usr/share/sesame-daemon/sesame-daemon.service
 
-          mkdir -p .rpmpkg/etc/default
-          cp .debpkg/etc/default/sesame-daemon .rpmpkg/etc/default/sesame-daemon
+          # Le fichier /etc/default/sesame-daemon n'est pas livré directement (il serait écrasé
+          # à la mise à jour) : il est créé par les scriptlets à partir de ce fichier par défaut.
+          cp .debpkg/usr/share/sesame-daemon/sesame-daemon.default .rpmpkg/usr/share/sesame-daemon/sesame-daemon.default
 
       - name: Create rpm package
         uses: jiro4989/build-rpm-action@v2
@@ -172,12 +174,22 @@ jobs:
           version: ${{ env.PACKAGE_VERSION }} # ${{ github.ref }} # refs/tags/v*.*.*
           arch: 'x86_64'
           desc: 'Sesame Daemon'
+          # build-rpm-action ne gère que %post : les sections %pre et %posttrans sont injectées
+          # à la suite. Ordre RPM lors d'une mise à jour : %pre (nouveau), %post (nouveau),
+          # suppression des fichiers de l'ancien paquet, %posttrans (nouveau).
           post: |
             #!/bin/sh
             set -e
 
             DEB_MAINT_SCRIPT_PACKAGE=sesame-daemon
             SERVICE_FILE=/lib/systemd/system/$DEB_MAINT_SCRIPT_PACKAGE.service
+            CONF_FILE=/etc/default/$DEB_MAINT_SCRIPT_PACKAGE
+
+            # Installation initiale : création de la configuration par défaut si absente
+            if [ ! -f "$CONF_FILE" ]; then
+              mkdir -p /etc/default
+              cp /usr/share/$DEB_MAINT_SCRIPT_PACKAGE/$DEB_MAINT_SCRIPT_PACKAGE.default "$CONF_FILE"
+            fi
 
             cp /usr/share/$DEB_MAINT_SCRIPT_PACKAGE/$DEB_MAINT_SCRIPT_PACKAGE.service $SERVICE_FILE
             systemctl daemon-reload
@@ -185,6 +197,24 @@ jobs:
             systemctl enable $DEB_MAINT_SCRIPT_PACKAGE.service
             systemctl start $DEB_MAINT_SCRIPT_PACKAGE.service
             systemctl restart $DEB_MAINT_SCRIPT_PACKAGE.service
+
+            %pre
+            # Sauvegarde de la configuration existante (les anciennes versions livraient
+            # /etc/default/sesame-daemon, que RPM supprime lors de la mise à jour)
+            if [ -f /etc/default/sesame-daemon ]; then
+              cp -p /etc/default/sesame-daemon /etc/default/sesame-daemon.rpm-keep
+            fi
+
+            %posttrans
+            # Restauration de la configuration si elle a été supprimée par la mise à jour
+            CONF_FILE=/etc/default/sesame-daemon
+            if [ ! -f "$CONF_FILE" ] && [ -f "$CONF_FILE.rpm-keep" ]; then
+              mv "$CONF_FILE.rpm-keep" "$CONF_FILE"
+            elif [ ! -f "$CONF_FILE" ]; then
+              mkdir -p /etc/default
+              cp /usr/share/sesame-daemon/sesame-daemon.default "$CONF_FILE"
+            fi
+            rm -f "$CONF_FILE.rpm-keep"
 
       - name: Release
         uses: svenstaro/upload-release-action@v2
